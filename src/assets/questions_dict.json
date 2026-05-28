@@ -1,0 +1,151 @@
+{
+  "caja": [
+    { "key": "caja_01", "pregunta": "ÁREA DE CAJA LIMPIA Y ORDENADA (INCLUYE LIMPIEZA DE LOS CRISTALES)", "respuesta": "####" },
+    { "key": "caja_02", "pregunta": "PROTOCOLO DE ATENCIÓN AL CLIENTE", "respuesta": "####" },
+    { "key": "caja_03", "pregunta": "USO CORRECTO DEL UNIFORME", "respuesta": "####" },
+    { "key": "caja_04", "pregunta": "SEPARA EL DEPÓSITO Y EXCESO DE EFECTIVO EN CAJA FUERTE", "respuesta": "####" },
+    { "key": "caja_05", "pregunta": "SIN MORRALLA FUERA DE CAJA", "respuesta": "####" },
+    { "key": "caja_06", "pregunta": "CAJA FUERTE EMPOTRADA Y FUNCIONANDO", "respuesta": "####" },
+    { "key": "caja_07", "pregunta": "PUERTA Y CERRADURA FUNCIONANDO CORRECTAMENTE", "respuesta": "####" },
+    { "key": "caja_08", "pregunta": "CUENTA CON BOTE DE BASURA", "respuesta": "####" },
+    { "key": "caja_09", "pregunta": "CAJÓN DE DINERO FUNCIONA CORRECTAMENTE", "respuesta": "####" },
+    { "key": "caja_10", "pregunta": "EQUIPO DE CÓMPUTO COMPLETO Y FUNCIONANDO CORRECTAMENTE", "respuesta": "####" },
+    { "key": "caja_11", "pregunta": "AA FUNCIONANDO Y EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "caja_12", "pregunta": "ARQUEO DE CAJA", "respuesta": "####" },
+    { "key": "caja_13", "pregunta": "ARQUEO DE FONDO FIJO", "respuesta": "####" }
+  ],
+  "almacen": [
+    {"key": "almacen_01","pregunta": "EXISTENCIA FISICA VS REPORTE M","respuesta": "###"},
+    {"key": "almacen_02","pregunta": "SIN MERMA ACUMULADA PENDIENTE POR DAR DE BAJA O TIRAR","respuesta": "###"},
+    {"key": "almacen_03","pregunta": "SIN MERMA ENCASILLADA (MATERIAL ROTO, CADUCADO)","respuesta": "###"},
+    {"key": "almacen_04","pregunta": "EXISTENCIA FISICA VS REPORTE G","respuesta": "###"},
+    {
+        "key": "almacen_05",
+        "pregunta": "SEGUIMIENTO Y ESTATUS DE GARANTIA (SOPORTES DEL PRODUCTO FALTANTE SOLICITADO POR EL PROVEEDOR)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_06",
+        "pregunta": "PEDIDOS ESPECIALES (PRODUCTO SEPARADO E IDENTIFICADO)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_07",
+        "pregunta": "BODEGA LIMPIA Y EN ORDEN (SIN BASURA EN EL PISO, CARTON, FLEJES, RAFIA, ETC)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_08",
+        "pregunta": "PRODUCTO PENDIENTE DE ENTREGA (AREA VERDE) SEPARADO E IDENTIFICADO",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_09",
+        "pregunta": "VALIDACION DE REPORTE DE PRODUCTOS EN TRANSITO (DEPURACION DE TRANSITO ATRASADO)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_10",
+        "pregunta": "RACK CON MARBETES DE UBICACION",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_11",
+        "pregunta": "RACKS EN BUEN ESTADO",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_12",
+        "pregunta": "PRODUCTO ENCASILLADO CON MARBETE (VALIDAR QUE EL MARBETE CORRESPONDA AL PRODUCTO)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_13",
+        "pregunta": "PASILLOS MARCADOS CON LETREROS",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_14",
+        "pregunta": "SIN PRODUCTO EN EL PISO FUERA DE RACK (CONSIDERAR PRODUCTO EN AREA AZUL)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_15",
+        "pregunta": "CUENTA CON AREAS LOL IDENTIFICADAS (ROJA, AMARILLA, BLANCA, VERDE, AZUL)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_16",
+        "pregunta": "CUENTA CON BOTES DE BASURA (BOTES SUFICIENTES PARA EL AREA ASI COMO BOTES SIN EXCESO DE BASURA, BASURA DEL DIA)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_17",
+        "pregunta": "CUENTA CON HERRAMIENTAS EN BUEN ESTADO (PATINES, CARRITOS, DIABLITOS, FAJA, CASCO, ETC)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_18",
+        "pregunta": "EL PEGAZULEJO O PRODUCTO SENSIBLE A LA HUMEDAD SE ENCUENTRA SOBRE TARIMAS (NO DIRECTAMENTE SOBRE EL PISO)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_19",
+        "pregunta": "LOS EMPAQUES DE LOS PISOS EN BUEN ESTADO (NO PISOS SUELTOS, CON FLEJE, RAFIA, ETC)",
+        "respuesta": "###"
+    },
+    {
+        "key": "almacen_20",
+        "pregunta": "¿LOS PRODUCTOS SENSIBLES, SAGRADOS Y DESCONTINUADOS SE ENCUENTRAN IDENTIFICADOS?",
+        "respuesta": "###"
+    },
+    {   "key": "almacen_21","pregunta": "¿LOS PRODUCTOS SENSIBLES Y SAGRADOS CUENTAN CON EXISTENCIA SUFICIENTE?","respuesta": "###"},
+    {   "key": "almacen_22","pregunta": "¿CHOFER ESPECIALIZADO UTILIZA CASCO Y CINTURÓN DE SEGURIDAD MIENTRAS CONDUCE?","respuesta": "###"},
+    { "key": "almacen_23","pregunta": "¿PERSONAL DE ALMACEN PORTA EL UNIFORME CORRECTAMENTE?","respuesta": "###"},
+    { "key": "almacen_24","pregunta": "¿CUENTAN CON RADIOS EN BUEN ESTADO Y SE UTILIZAN?","respuesta": "###"}
+],
+
+  "edificio": [
+    { "key": "edif_01", "pregunta": "FACHADA LIMPIA Y PINTURA EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "edif_02", "pregunta": "LOGOTIPO O ESPECTACULAR COMPLETO Y EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "edif_03", "pregunta": "ÁREA DE ESTACIONAMIENTO LIMPIA, CAJONES DELIMITADOS, TOPES EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "edif_04", "pregunta": "ÁREA VERDE BIEN CUIDADA, SIN BASURA Y HIERBA", "respuesta": "####" },
+    { "key": "edif_05", "pregunta": "CRISTALES LIMPIOS Y EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "edif_06", "pregunta": "CORTINAS LIMPIAS Y EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "edif_07", "pregunta": "PISOS EN GENERAL EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "edif_08", "pregunta": "PUERTAS EN GENERAL EN BUENAS CONDICIONES, LAS DE ACCESO, CON INDICACIONES EMPUJE O JALE", "respuesta": "####" },
+    { "key": "edif_09", "pregunta": "VENTILADORES LIMPIOS Y FUNCIONANDO", "respuesta": "####" },
+    { "key": "edif_10", "pregunta": "TECHO EN BUEN ESTADO, LÁMINAS SIN FILTRACIONES", "respuesta": "####" },
+    { "key": "edif_11", "pregunta": "BAÑO EN BUEN ESTADO, LIMPIO Y SIN MAL OLOR", "respuesta": "####" },
+    { "key": "edif_12", "pregunta": "PAREDES EN BUEN ESTADO, NO SUCIAS NI CUARTEADAS", "respuesta": "####" },
+    { "key": "edif_13", "pregunta": "ESCALERAS EN BUEN ESTADO CON PASAMANOS", "respuesta": "####" },
+    { "key": "edif_14", "pregunta": "LUMINARIAS COMPLETAS FUNCIONANDO", "respuesta": "####" },
+    { "key": "edif_15", "pregunta": "ÁREA DE COMEDOR LIMPIO Y SIN RESTOS DE COMIDA", "respuesta": "####" },
+    { "key": "edif_16", "pregunta": "BOTE DE BASURA DEL COMEDOR SIN BASURA DE VARIOS DÍAS", "respuesta": "####" },
+    { "key": "edif_17", "pregunta": "REFRIGERADOR LIMPIO, SIN RESTOS DE COMIDA", "respuesta": "####" },
+    { "key": "edif_18", "pregunta": "ÁREA DEL SITE CERRADA, LIMPIA Y CON AA FUNCIONANDO", "respuesta": "####" },
+    { "key": "edif_19", "pregunta": "MONTACARGAS EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "edif_20", "pregunta": "EQUIPO DE REPARTO EN BUEN ESTADO", "respuesta": "####" }
+  ],
+  "sala": [
+    { "key": "sala_01", "pregunta": "PRODUCTO EXHIBIDO CON MARBETE LIMPIO", "respuesta": "####" },
+    { "key": "sala_02", "pregunta": "EXHIBIDORES LIMPIOS EN BUEN ESTADO", "respuesta": "####" },
+    { "key": "sala_03", "pregunta": "OFERTAS IDENTIFICADAS Y VISIBLES PARA EL CLIENTE", "respuesta": "####" },
+    { "key": "sala_04", "pregunta": "SALA DE EXHIBICIÓN LIMPIA (PISOS, TECHOS, PAREDES)", "respuesta": "####" },
+    { "key": "sala_05", "pregunta": "CUENTA CON BOTES DE BASURA", "respuesta": "####" },
+    { "key": "sala_06", "pregunta": "LAS PANTALLAS SE ENCUENTRAN ENCENDIDAS Y FUNCIONANDO CORRECTAMENTE", "respuesta": "####" },
+    { "key": "sala_07", "pregunta": "LOS AIRES DE LA SALA ENCENDIDOS Y FUNCIONANDO CORRECTAMENTE", "respuesta": "####" },
+    { "key": "sala_08", "pregunta": "LA ASESORA UTILIZA LA TABLETA", "respuesta": "####" },
+    { "key": "sala_09", "pregunta": "TABLETA CON FUNDA, CARGADOR FUNCIONANDO", "respuesta": "####" },
+    { "key": "sala_10", "pregunta": "CUENTAN CON AGUA/CONOS PARA LOS CLIENTES", "respuesta": "####" },
+    { "key": "sala_11", "pregunta": "PERSONAL DE VENTAS PORTA EL UNIFORME", "respuesta": "####" },
+    { "key": "sala_12", "pregunta": "PERSONAL DE VENTAS CUMPLE CON EL PROTOCOLO DE VENTA", "respuesta": "####" },
+    { "key": "sala_13", "pregunta": "PERSONAL DE SALA ABORDA AL CLIENTE CUANDO INGRESA", "respuesta": "####" },
+    { "key": "sala_14", "pregunta": "CUADRE DE PRODUCTOS DE SALA (PROVEDOR-SUCURSAL)", "respuesta": "####" },
+    { "key": "sala_15", "pregunta": "ÁREA DE BOXITO UNIVERSITY", "respuesta": "####" },
+    { "key": "sala_16", "pregunta": "EQUIPOS DE CÓMPUTO COMPLETOS Y FUNCIONANDO", "respuesta": "####" },
+    { "key": "sala_17", "pregunta": "ESCÁNER Y PANTALLA DE ENTREGA FUNCIONANDO", "respuesta": "####" },
+    { "key": "sala_18", "pregunta": "ÁREA DE DESCONTINUADOS ORDENADO POR CATEGORÍA", "respuesta": "####" },
+    { "key": "sala_19", "pregunta": "RADIOS EN BUEN ESTADO Y SE UTILIZAN", "respuesta": "####" }
+  ]
+}
