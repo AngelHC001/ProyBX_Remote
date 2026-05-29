@@ -4,11 +4,11 @@ import { ViewContext } from './components/view_context.jsx';
 import Section from "./components/section-template.jsx";
 
 
-
-
-
 //funciones de absorcion de json de las preguntas
 //opciones elegidas, se usaran en json?
+//como acumular?
+// como formatear?
+// metodo de envio a drive?
 
 const pestañas = [
   {
@@ -44,10 +44,10 @@ function App() {
   
   return (
     <div className="container-fluid">    
-      <h1 className="display-4 p-3"> <i className="bi bi-clipboard2-check"/> Checklist</h1>
+      <h1 className="display-5 p-3"> <i className="bi bi-clipboard2-check"/> Checklist</h1>
       <hr />
 
-      <div className="d-flex justify-content-center gap-3">
+      <div className="d-flex flex-wrap flex-sm-wrap justify-content-center gap-2">
         { pestañas.map(p => ( 
             <button key={p.key} 
               className={`btn border-bottom-0 btn-lg ${activeView.type === p.index ? 'btn-danger' :'btn btn-outline-danger'}`}
@@ -57,15 +57,11 @@ function App() {
         )) }
       </div>
 
-      <div className="container border border-danger border-2 rounded">
+      <div className="container main-section border border-danger border-2 rounded">
         <ViewContext.Provider value={ {activeView, setActiveView} }>
             <Section/>
         </ViewContext.Provider>
       </div>
-
-      como acumular?
-      como formatear?
-      metodo de envio a drive?
     </div>
    
   )

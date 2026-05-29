@@ -1,9 +1,9 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ViewContext } from "./view_context";
 
 import Question from './question-template';
 import SectionDict from '../assets/questions_dict.json'
-
+import '../App.css';
 
 //marca de guardado para acumular info
 
@@ -19,9 +19,11 @@ const sucursales = [
 ];
 
 function MainSection(){
+    const [isEnabled, SetIsEnabled] = useState(true);
+
     return(
-        <div className="container d-flex flex-column px-4 gap-2 w-50">
-            <label className="form-label display-6">SUCURSAL PROVENIENTE</label>
+        <div className="container d-flex flex-column py-3 gap-2 w-75">
+            <h6 className="text-center display-6">SUCURSAL PROVENIENTE</h6>
             <select className="form-control">Sucursal
                 { 
                     sucursales?.map((sc) => (
@@ -32,7 +34,19 @@ function MainSection(){
 
             <label className="form-label">Fecha</label>
             <input className="form-control" type="date"/>
-            <button className="btn btn-primary btn-lg">Enviar Reporte</button>
+
+            <div className="text-center alert alert-danger rounded p-3">
+                <div className="form-check-inline">
+                    <input className="form-check-input me-2" type="checkbox" onClick={() => SetIsEnabled(!isEnabled)}/>
+                    <label className="form-check-label">
+                        Todo listo para enviar
+                    </label>
+                </div>     
+                
+                <button className="btn btn-primary btn-lg" disabled={isEnabled}>
+                    Enviar Datos
+                </button>
+            </div>
         </div>
     )
 }
@@ -47,7 +61,7 @@ function Section(){
     const SeccionEdif = SectionDict.edificio; 
     
     return(
-        <div className="col p-3 text-center">
+        <div className="col question-space text-center">
             {activeView.type === 'main' && <MainSection/>}
 
             {activeView.type === 'caja' && SeccionCaja?.map((q,index) => 
