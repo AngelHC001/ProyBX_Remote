@@ -4,12 +4,6 @@ import { ViewContext } from './components/view_context.jsx';
 import Section from "./components/section-template.jsx";
 
 
-//funciones de absorcion de json de las preguntas
-//opciones elegidas, se usaran en json?
-//como acumular?
-// como formatear?
-// metodo de envio a drive?
-
 const pestañas = [
   {
     key: 'bx1',
@@ -63,7 +57,6 @@ function App() {
         </ViewContext.Provider>
       </div>
     </div>
-   
   )
 }
 
