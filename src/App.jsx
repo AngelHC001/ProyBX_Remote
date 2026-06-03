@@ -38,7 +38,7 @@ function App() {
   
   return (
     <div className="container-fluid">    
-      <h1 className="display-5 p-3"> <i className="bi bi-clipboard2-check"/> Checklist</h1>
+      <h1 className="display-5 p-1"> <i className="bi bi-clipboard2-check"/> Checklist</h1>
       <hr />
 
       <div className="d-flex flex-wrap flex-sm-wrap justify-content-center gap-2">

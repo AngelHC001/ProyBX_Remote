@@ -103,10 +103,8 @@ function Question({idPregunta, txt}){
                     (<div className="container w-50 d-flex flex-column gap-2">
                         { fields }
                         <label>Observaciones</label>
-                        <div>
-                            <textarea className="form-control" value={observaciones}
-                            onChange={(e) => setRespuesta(activeView, idPregunta, respuesta, e.target.value, fotos)}/>
-                        </div>
+                        <textarea className="form-control" value={observaciones}
+                        onChange={(e) => guardarCambios({observaciones: e.target.value})}/>
                     </div>)
             }
         </div>
