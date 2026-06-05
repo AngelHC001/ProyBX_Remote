@@ -22,8 +22,18 @@ export function ImagePreview({file, onRemove,onRetake}){
 
     //Si hay foto
     return(
-       <div className="container">
-            <img src={previewURL} alt="Fallo de auditoría" className="img-fluid rounded"/>
+       <div className="container p-0 mx-auto" style={{maxWidth: '400px'}}>
+            <div className="d-flex align-items-center justify-content-center rounded overflow-hidden"
+             style={{ height: '200px', width: '100%' }}>
+                <img className="img-fluid" src={previewURL} 
+                    width={400} height={200} 
+                    alt="Fallo de auditoría"
+                    style={{ 
+                        maxHeight: '100%', 
+                        maxWidth: '100%', 
+                        objectFit: 'contain' // Mantiene la resolución y proporción nativa sin deformar
+                    }}/>
+            </div>
 
             {/* Superposición de controles al pasar el mouse/tap */}
             <div className="d-flex justify-content-center gap-2 p-2">
