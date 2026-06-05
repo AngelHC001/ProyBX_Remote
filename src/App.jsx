@@ -41,10 +41,10 @@ function App() {
       <h1 className="display-5 p-1"> <i className="bi bi-clipboard2-check"/> Checklist</h1>
       <hr />
 
-      <div className="d-flex flex-wrap flex-sm-wrap justify-content-center gap-2">
+      <div className="mobile-tabs-container">
         { pestañas.map(p => ( 
             <button key={p.key} 
-              className={`btn border-bottom-0 btn-lg ${activeView.type === p.index ? 'btn-danger' :'btn btn-outline-danger'}`}
+              className={`mobile-tab-btn ${activeView.type === p.index ? 'is-active' :''}`}
               onClick={() => setActiveView({type: p.index})}>
                 {p.btnName}
             </button>

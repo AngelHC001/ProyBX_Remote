@@ -6,12 +6,19 @@ import { create } from "zustand";
 
 //los arrays de secciones almacenan
 //{ pregunta: 1, respuesta:'#', fotos:[], observaciones: ''}
+const getFechaHoy = ()=>{
+    const hoy = new Date();
+    const offset = hoy.getTimezoneOffset();
+    const fechaLocal = new Date(hoy.getTime() - (offset * 60 * 1000));
+    return fechaLocal.toISOString().split('T')[0];
+}
+
 
 export const useFormStore = create((set) => ({
         //ESTRUCTURA INICIAL DEL JSON
         metadata : {
             sucursal:'',
-            fecha:''
+            fecha: getFechaHoy()
         },
         secciones:{
             caja:[],
@@ -20,10 +27,20 @@ export const useFormStore = create((set) => ({
             edif:[]
         },
 
-        //Guardar sucursal y fecha
-        setMetadata: (sucursal,fecha) => set((state) => ({
-            metadata: { sucursal,fecha }
+        //Guardar sucursal y fecha por separado
+        setSucursal: (sucursal) => set((state) => ({
+            metadata: {
+                ...state.metadata, //conserva
+                sucursal: sucursal
+            }
         })),
+
+        setFecha: (fecha) => set((state) => ({
+            metadata: {
+                ...state.metadata, //conserva
+                fecha: fecha
+            }
+        })),     
 
         //Guardar o actualizar una pregunta de las secciones
         setRespuesta: (seccion,idPregunta,respuesta,observaciones='',fotos=[]) => set((state) => {

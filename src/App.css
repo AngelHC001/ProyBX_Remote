@@ -7,6 +7,51 @@ body{
   background-color: rgb(239, 239, 239);
 }
 
+/* BOTON PESTAÑA DE SECCION */
+.mobile-tabs-container{
+  display: flex;
+  background-color: #f1f3f5; /* Fondo gris claro tipo iOS/Android */
+  border-radius: 8px; /* Esquinas muy redondeadas tipo píldora */
+  margin-bottom: 1rem;
+  gap: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0; /* Se queda fijo arriba al hacer scroll en el celular */
+  z-index: 1020;
+}
+
+.mobile-tab-btn{
+  flex: 1; /* Distribuye el espacio equitativamente entre todas las pestañas */
+  border: none !important; /* Quitamos el borde tosco de Bootstrap */
+  background: transparent;
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 10px 4px;
+  border-radius: 9px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); /* Animación suave */
+  text-align: center;
+  white-space: nowrap;
+  outline: none;
+  -webkit-tap-highlight-color: transparent; /* Elimina el flash azul al tocar en móviles */
+}
+
+/* Estado Activo: Reemplaza al 'btn-danger' con un look de app moderna */
+.mobile-tab-btn.is-active {
+  background-color: #dc3545; /* El rojo danger de Bootstrap */
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25); /* Sombra difuminada de color */
+  transform: scale(1.02); /* Pequeño efecto de relieve */
+}
+
+/* Efecto feedback táctil al presionar en celular */
+.mobile-tab-btn:active {
+  transform: scale(0.95);
+}
+
+
+
+/* DISEÑOS DE PREGUNTAS */
 .question-space{
   height: 400px;
   overflow: auto;
@@ -32,6 +77,7 @@ body{
     background: #555; /* Handle hover color */
 }
 
+/* IMAGEN DE LAS PREGUNTAS */
 .place-image-box{
     width: 400px;
     height: 180px;
@@ -39,7 +85,6 @@ body{
     align-items: center;
     justify-content: center;
 }
-
 
 .placeholder-box {
       width: 400px;
@@ -65,9 +110,7 @@ body{
 
 .main-section{
   background-color: rgb(255, 240, 240);
-
 }
-
 
 /*MOVILES*/
 
@@ -83,6 +126,17 @@ body{
       height: auto;         /* Ajusta la altura al contenido */
       min-height: 150px;    /* Altura mínima para mantener diseño */
       margin: 0 auto;      
+  }
+
+  .mobile-tabs-container {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+  }
+
+  .mobile-tab-btn {
+    padding-left: 12px;
+    padding-right: 12px;
+    flex: none;
   }
 
 }

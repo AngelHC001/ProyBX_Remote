@@ -137,7 +137,7 @@ export function BotonDrive(){
     
     
     return(
-        <div className="text-center alert alert-danger rounded p-3">
+        <div className="text-center alert alert-danger rounded">
             <div className="form-check-inline">
                 <input className="form-check-input me-2" type="checkbox" onClick={() => SetIsEnabled(!isEnabled)}/>
                 <label className="form-check-label">Todo listo para enviar</label>
