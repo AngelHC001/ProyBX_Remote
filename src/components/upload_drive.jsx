@@ -1,29 +1,87 @@
 import { useState } from "react";
 import { useFormStore } from "../store/useFormStore";
-import { useGoogleLogin } from "@react-oauth/google";
 
 export function BotonDrive(){
     const { metadata, secciones } = useFormStore();
     const [isEnabled, SetIsEnabled] = useState(true);
     const [uploading, SetUploading] = useState(false);
 
-    //CONSULTAR API DRIVE
-    const apiDrive = async (url,options,token) => {
-        const response = await fetch(url,{...options,
-            headers: {
-                ...options.headers,
-                Authorization: `Bearer ${token}`
-            }
+    //configuracion local HACERLO ENV
+    //const CLOUD_FUNCTION_URL = "https://REGION-PROYECTO.cloudfunctions.net/uploadAuditoria";
+    const CLOUD_FUNCTION_URL = "http://localhost:8080/uploadAuditoria";
+    const API_TOKEN = "UN_TOKEN_MUY_LARGO_Y_SECRETO_GENERADO_POR_TI_123456";
+
+    const handleUpload = async() => {
+        if(!metadata.sucursal || !metadata.fecha){
+            alert("Por favor, registre la sucursal y la fecha antes de enviar.");
+            return;
+        }
+
+        SetUploading(true);
+        const formData = new FormData();
+        
+        //Adjuntar metadatos
+        formData.append('metadata',JSON.stringify(metadata));
+        formData.append('secciones', JSON.stringify(secciones));
+
+        //Extraer y adjuntar imagenes al formData
+        Object.keys(secciones).forEach((seccion) => {
+            secciones[seccion].forEach((p) => {
+                if(p.respuesta === 'NO' && p.fotos){
+                    p.fotos.forEach((fotoFile,index) => {
+                        if(fotoFile instanceof File){
+                            const extension = fotoFile.name.split('.').pop() || 'png';
+                            const nombreImagen = `${seccion}_q${p.pregunta}_falla${index + 1}.${extension}`;
+                        
+                            formData.append('images',fotoFile,nombreImagen);
+                        }
+                    });
+                }
+            });
         });
 
-        if(!response.ok){
-            const errorJson = await response.json();
-            throw new Error(errorJson.error?.message || 'Error en la API de Drive');
-        }
-        return response.json();
-    }
+        //EJECUTAR PETICION
+        try {
+            const response = await fetch(CLOUD_FUNCTION_URL,{
+                method: 'POST',
+                body: formData,
+                headers: {'Authorization' : `Bearer ${API_TOKEN}`}
+            });
 
-     //CREAR LA CARPETA EN DRIVE
+            const result = await response.json();
+
+            if(!response.ok){
+                throw new Error(result.error || 'Error desconocido en el servidor');
+            }
+
+            alert('Reporte enviado al drive central!');
+        } catch (error) {
+            console.error(error);
+            alert(`Ocurrio un error ${error}`);
+        }finally{
+            SetUploading(false);
+        }
+    }
+    return(
+        <div className="text-center alert alert-danger rounded">
+            <div className="form-check-inline">
+                <input className="form-check-input me-2" type="checkbox" onClick={() => SetIsEnabled(!isEnabled)}/>
+                <label className="form-check-label">Todo listo para enviar</label>
+            </div>  
+
+            <button className="btn btn-primary btn-lg" onClick={handleUpload} disabled={isEnabled || uploading}>
+                {uploading ? '🔄 Sincronizando con Drive...' : '🚀 Autenticar y Guardar en Drive'}
+            </button>      
+        </div>
+    )
+}
+
+
+/**
+ 
+MODO ORIGINAL
+
+  //CREAR LA CARPETA EN DRIVE
     const crearCarpeta = async(token) => {
         //Carpeta con el nombre del dia
         const hoy = new Date().toISOString().split('T')[0];
@@ -43,6 +101,8 @@ export function BotonDrive(){
         return data.id;
     };
 
+
+    
      //ENVIAR ARCHIVO A DRIVE
     const subirArchivoDrive = async(blob, nombreArchivo, mimeType, folderId, token) => {
         const form = new FormData();
@@ -60,7 +120,27 @@ export function BotonDrive(){
             body: form,
         }, token);
     };
+ */
 
+    
+    /*
+    //CONSULTAR API DRIVE
+    const apiDrive = async (url,options,token) => {
+        const response = await fetch(url,{...options,
+            headers: {
+                ...options.headers,
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if(!response.ok){
+            const errorJson = await response.json();
+            throw new Error(errorJson.error?.message || 'Error en la API de Drive');
+        }
+        return response.json();
+    }
+
+   
      //FLUJO PRINCIPAL OAUTH
     const login2Upload = useGoogleLogin({
         flow: 'implicit',
@@ -90,8 +170,6 @@ export function BotonDrive(){
                 const blobTxt = new Blob([contenidoTxt], {type: 'text/plain'});
                 await subirArchivoDrive(blobTxt, `${metadata.sucursal}_Respuestas.txt`,
                     'text-plain',folderId,accessToken);
-
-                console.log('TXT SUBIDO CON EXITO');
                 
                 //PROCESAR E IDENTIFICAR IMAGENES
                 for (const seccion of Object.keys(secciones)) {
@@ -124,29 +202,4 @@ export function BotonDrive(){
             alert('Error en la autenticación con Google');
             console.error(error);
         }
-    });
-
-    const handleUpload = () => {
-        if(!metadata.sucursal || !metadata.fecha){
-            alert("Por favor, registre la sucursal y la fecha antes de enviar.");
-            return;
-        }
-
-        login2Upload();
-    }
-    
-    
-    return(
-        <div className="text-center alert alert-danger rounded">
-            <div className="form-check-inline">
-                <input className="form-check-input me-2" type="checkbox" onClick={() => SetIsEnabled(!isEnabled)}/>
-                <label className="form-check-label">Todo listo para enviar</label>
-            </div>  
-
-            <button className="btn btn-primary btn-lg" onClick={handleUpload} disabled={isEnabled || uploading}>
-                {uploading ? '🔄 Sincronizando con Drive...' : '🚀 Autenticar y Guardar en Drive'}
-            </button>      
-        </div>
-    )
-
-}
+    });*/
