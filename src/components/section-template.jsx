@@ -3,12 +3,8 @@ import { ViewContext } from "./view_context";
 
 import MainSection from "./section-main";
 import Question from './question-template';
-import SectionDict from '../assets/questions_dict.json'
+import SectionDict from '../store/questions_dict.json';
 import '../App.css';
-
-// como acumular?
-// como formatear?
-// metodo de envio a drive?
 
 function Section(){
     const { activeView } = useContext(ViewContext);

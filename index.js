@@ -1,42 +1,45 @@
+import process from 'process';
 import { google } from "googleapis";
 import busboy from "busboy";
 import { PassThrough } from "stream";
 import { Buffer } from "buffer";
 
-//sera variable de entorno en produccion
-const ENV_VALUES_TEST = {
-    API_TOKEN: "UN_TOKEN_MUY_LARGO_Y_SECRETO_GENERADO_POR_TI_123456",
-    CARPETA_RAIZ_DRIVE: "189AnRt0Id2Cl5V8neunxnkllMadr8Dr4"
-}
+import dotenv from 'dotenv';
+dotenv.config({path: '.env.development'});
 
-//LA CUENTA DE SERVICIO
-const credentials = {
-  type: "service_account",
-  project_id: "bxremote-intime",
-  private_key_id: "1e882e726eab7910ec2fcbc2bd7525dd055cde3e",
-  private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDZlEhTy4S3cUD0\nd83GhJIw0Hy9T4ooJXbdBKHgDJ9w35JmiclkLwy9b7z1ZoqMcAU3cw02yvju+JE/\nW9KI6kUIQ6py46cXoN679sNxv/1mON9cWzZ64dixbWgy0LFOdbaLYpgKXBRb86Nx\n/DsNNthgyEuQBnXiucW6ayj0379CiNmFZLmK3LePdr8VqR0bvSY6UvT7gwmCL8Lx\nuT83J+nBb/HS4ZmnsfTs/k/TrsKAOFQ7TMz4iIyYym6g4vhlrRmQtIh4ZnlTUCsi\nzKiMwu7BItbF49zqD3AHI8AXUct04ITEgxC4ueaf+57UVSUYYyGVTQG27JryjGy7\n0dPLrXoHAgMBAAECggEAYUJrCGYX1+Z82ir5pY1aSg7QS9GT2PlSRl8NOzl5Rjvy\nVfqutyVfBQk/RtVFBp0Gf/BijkUx/KTJTLCvjntmS1jwBvZjmWjUV+JpIF5pl/nB\nQqgVVN3C/yEAbIKkV4XACVOT0kGx6h6hR9Ev1mrXU4AFYwa4SJaxX/EJ+FhSRxtR\nM51o+qQICMFAj14HGfPHKuWb+H8eTnW070WagmGlLA2iJwqvN2v+iSxWTsDcrgK6\n6HRFQw91jSSHb9SoZSdMNkUrEsiMQ5f0QEQVA+FLIN0UYarV1HvrDTEGtRQ3sv3s\noFluPSkodzVvkxyUM0KXiuz+mItJw6BXEGqZdVVZVQKBgQD1czVMT3rarftHD84z\nNVkXrO1QdUj7nmn5UdAea6Gawri7azgtFbboa3532JjrlO/wpAuAjuNfqU0NCrP8\nuURR1XgvNc+9AJmvTIFkxEpeHc3PUpVxl60CutLTd/lrF9t5AHpYHRoU29UDNdP2\nKWF0vb3C9I1dE6IuUcnBXD24LQKBgQDi7mZjDjQz0E3fa69Cs4MA24WFpDHgb345\nZki0FnF1O61tjEg3+fRSDw9/K5HTshb8g4R7nqj3kpyIjZRg+gg3Um5aG7FHTvLw\nNw/NB+6TF5i97208WFDXHvQijStx3EctoA6Wmd+ElY2q9HODdoRXB4VODAjbxcpx\nTQSkqqsHgwKBgA2fECUlAAdkwl4mNWZIHqKeuSjO6Xb1SqJIdQlLJdPF3KSiBaMS\n4myxknoqLgpc4Jf1MqI2y82CQsFnh6eNzInSE/JixR2TC/RbhY7HCe2BL+vChIKi\nTTqqjYqozNGxqD9l1GRRcSIZNRARi6rMjxkAcqiAE9xHe6egaFbvvIkdAoGBAImV\nrLHlzLSVWIFa0nmISKbecUejUzIVptu6Ld4xtTw0oGNIqAh4HS8bPnQFwHYvBUy3\nmD0y5pKjaxBHdmyNaynPamRrYcIwFY6ac5QFeRnpNowBe6MYkHq8o5vHJ03zFZyN\n7ApW5HOIEMpTRy2vT3FMd//nv/8vHhwva99CMkttAoGBAK1CIRaqQfrO5azQa9oW\nC2t/gesqJt9NsAtNkWGo5ZZyF3jSFQEdcyxtJcMAR/AfPdF1DIQZbkN0ISVX/vyL\nmRCfdkIcDoVFY7eG4CBhu7gMLX5rY6Joydua4OZi92P6kKhnCnWl0SPI2lKa9jYY\nCaXPz/M2dfMZC7FM8fHFn0iq\n-----END PRIVATE KEY-----\n",
-  client_email: "bxremote-intime-bot@bxremote-intime.iam.gserviceaccount.com",
-  client_id: "116075726182714957545",
-  auth_uri: "https://accounts.google.com/o/oauth2/auth",
-  token_uri: "https://oauth2.googleapis.com/token",
-  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/bxremote-intime-bot%40bxremote-intime.iam.gserviceaccount.com",
-  universe_domain: "googleapis.com"
-};
 
-const llaveLimpia = credentials.private_key.replace(/\\n/g, '\n');
+//Variables de entorno en produccion
+const API_TOKEN = process.env.VITE_TOKEN_KEY;
+const DRIVE_FOLDER = process.env.VITE_DRIVE_FOLDER;
 
-//AUTENTICACION USANDO EL BOT
-const auth = new google.auth.JWT({
-    email: credentials.client_email,
-    key: llaveLimpia,
-    scopes: ['https://www.googleapis.com/auth/drive']
+//oauth
+const OAUTH_ID = process.env.VITE_OAUTH_ID;
+const SECRET = process.env.VITE_FORAIGN_KEY;
+const RFK = process.env.VITE_REFRESH_TOOL;
+
+
+//AUTENTICACION USANDO EL CLIENT ID
+const auth2Client = new google.auth.OAuth2({
+    clientId: OAUTH_ID,
+    clientSecret:SECRET,
+    redirectUri:"https://developers.google.com/oauthplayground"
 });
 
-//USA LA CUENTA DE SERVICIO
+auth2Client.setCredentials({ refresh_token: RFK });
+
+//EVENTOS DE CAMBIO
+auth2Client.on('tokens',(tokens) => {
+    if(tokens.refresh_token){
+        console.log('Nuevo token');
+    }
+    console.log('Acceso temporal renovado');
+});
+
+
+//USA EL CLIENT ID
 const drive = google.drive({
     version: "v3", 
-    auth: auth
+    auth: auth2Client
 });
 
 
@@ -46,16 +49,24 @@ export const uploadAuditoria = async(req,res) => {
     res.set('Access-Control-Allow-Methods', 'POST', 'OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    // FORZAR COMPROBACIÓN DE CREDENCIALES
+    //VERIFICACION DE CREDENCIALES
     try {
-        await auth.authorize();
-        console.log("¡Autenticación con Cuenta de Servicio exitosa!");
+        const tokenResponse = await auth2Client.getAccessToken();
+        
+        console.log(tokenResponse);
+        
+
+        if(!tokenResponse.token){
+            throw new Error("NO SE PUDO GENERAR UN TOKEN ACCESS VALIDO");
+        }
+        
+        console.log("¡Autenticación OAUTH exitoso!");
     } catch (authError) {
-        console.error("Error crítico de autenticación JWT:", authError.message);
-        return res.status(401).json({ error: `La Cuenta de Servicio no pudo autenticarse: ${authError.message}` });
+        console.error("Error crítico de autenticación:", authError.message);
+        return res.status(401).json({ error: `La cuenta no pudo autenticarse: ${authError.message}` });
     }
 
-
+    //FILTROS DE OPERACION
     if(req.method === 'OPTIONS'){
         return res.status(204).send('');
     }
@@ -63,7 +74,10 @@ export const uploadAuditoria = async(req,res) => {
     //SECURITY CONSTRAINT 1 -- VALIDACION DE API TOKEN SECRETO
     const authHeader = req.headers.authorization;
 
-    if(!authHeader || authHeader !== `Bearer ${ENV_VALUES_TEST.API_TOKEN}`){
+    console.log('enviado '+ authHeader);
+    console.log(`ESPERADO ${API_TOKEN}`);
+    
+    if(!authHeader | !authHeader.startsWith('Bearer ')){
         return res.status(401).json({ error: 'ACCESO NO AUTORIZADO, TOKEN INVALIDO' });
     }
 
@@ -71,6 +85,8 @@ export const uploadAuditoria = async(req,res) => {
         return res.status(405).json({error: 'METODO NO PERMITIDO'});
     }
 
+    console.log('PASO FILTROS');
+    
     try {        
         const bb = busboy({ headers: req.headers });
         const fields = {};
@@ -96,12 +112,14 @@ export const uploadAuditoria = async(req,res) => {
             });
         }); 
 
+        console.log('PASO EL PROCESS');
+        
         bb.on('finish', async() => {
             try {
                 const metadata = JSON.parse(fields.metadata || '{}');
                 const secciones = JSON.parse(fields.secciones || '{}');
 
-                //crear carpeta
+                //Crear carpeta
                 const hoy = new Date().toISOString().split('T')[0];
                 const folderName = `${metadata.sucursal?.replace(/\s+/g, '_')}_${hoy}`;
                 
@@ -109,12 +127,15 @@ export const uploadAuditoria = async(req,res) => {
                     requestBody: { 
                         name: folderName,
                         mimeType: 'application/vnd.google-apps.folder',
-                        parents: [ENV_VALUES_TEST.CARPETA_RAIZ_DRIVE]
+                        parents: [DRIVE_FOLDER]
                     },
                     fields: 'id'
                 });
             
                 const folderId = folderResponse.data.id;
+
+                console.log('FOLDER CREADO');
+                
 
                 //Crear y subir archivo de texto plano (.txt)
                 let contenidoTxt = `REPORTE: ${metadata.sucursal}\nFECHA: ${metadata.fecha}\n\n`;
@@ -127,7 +148,6 @@ export const uploadAuditoria = async(req,res) => {
                 });
 
                 await drive.files.create({
-                    supportsAllDrives: true,
                     requestBody: { 
                         name: 'reporte_datos.txt', 
                         parents: [folderId]
@@ -138,13 +158,15 @@ export const uploadAuditoria = async(req,res) => {
                     }
                 });
 
+                console.log('TEXTO PLANO LISTO');
+                
+
                 //Subir las imágenes asociadas vinculándolas a la carpeta
                 for(const fileObj of filesToUpload){
                     const bufferStream = new PassThrough();
                     bufferStream.end(fileObj.content);
                     
                     await drive.files.create({
-                        supportsAllDrives: true,
                         requestBody: {
                             name: fileObj.name, 
                             parents:[folderId]
@@ -156,6 +178,7 @@ export const uploadAuditoria = async(req,res) => {
                     });
                 }
 
+                console.log('IMAGENES LISTAS');
                 return res.status(200).json({status: 'success', message: 'Sincronizado con exito'});
             } catch (error) {
                 console.error(error);
