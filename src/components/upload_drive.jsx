@@ -8,7 +8,7 @@ export function BotonDrive(){
 
     //configuracion local HACERLO ENV
     //const CLOUD_FUNCTION_URL = "https://REGION-PROYECTO.cloudfunctions.net/uploadAuditoria";
-    const CLOUD_FUNCTION_URL = "http://localhost:8080/uploadAuditoria";
+    const CLOUD_FUNCTION_URL = "http://localhost:8080/drive/upload";
     const TOKEN = import.meta.env.VITE_TOKEN_KEY;
 
     const handleUpload = async() => {
