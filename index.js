@@ -4,8 +4,8 @@ dotenv.config({path: '.env.development'});
 import express from 'express';
 import cors from 'cors';
 
-import authRoutes from './backend/auth_routes';
-import driveRoutes from './backend/drive_routes';
+import authRoutes from './backend/auth_routes.js';
+import driveRoutes from './backend/drive_routes.js';
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(cors({origin: 'http://localhost:5173'}));
 app.use(express.json());
 
 //Enrutamiento interno
-app.use('auth',authRoutes);
-app.use('drive',driveRoutes);
+app.use('/auth',authRoutes);
+app.use('/drive',driveRoutes);
 
 export const uploadAuditoria = app;

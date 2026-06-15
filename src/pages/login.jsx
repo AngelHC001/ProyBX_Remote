@@ -3,9 +3,9 @@ import { useAuth } from "../../backend/auth_context";
 import { useNavigate } from "react-router-dom";
 
 export default function Login(){
-    const [userdata,setUserData] = useState({username: '', password: ''})
-    const [error,setError] = useState(false);
-    const [loading,setLoading] = useState(false);
+    const [userdata, setUserData] = useState({username: '', password: ''})
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const {login} = useAuth();
     const navigate = useNavigate(); 
@@ -22,20 +22,25 @@ export default function Login(){
         setLoading(true);
 
         try {
-            const response = await fetch('http:localhost:8080/login/auth',{
+            const response = await fetch('http://localhost:8080/auth/login',{
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify(userdata)
+                body: JSON.stringify({username: userdata.username, password: userdata.password})
             });
 
             const data = await response.json();
-
+            console.log(data);
+            
             if(!response.ok){
                 throw new Error(data.message || 'Ocurrio un error');
             }
 
             login(data.user, data.token);
-            navigate('/checklist');
+
+            setTimeout(() => {
+               navigate('/checklist');
+            },100);
+           
         } catch (error) {
             setError(error.message);
         }finally{
@@ -69,7 +74,7 @@ export default function Login(){
             {/* Campo Usuario */}
             <div className="form-group mb-3">
               <label className="form-label text-secondary small fw-semibold">Usuario</label>
-              <input type="text" className="form-control" placeholder="ej. auditor_01"
+              <input type="text" name="username" className="form-control" placeholder="ej. auditor_01"
                 value={userdata.username} onChange={handleChange}
                 required disabled={loading}/>
             </div>
@@ -77,7 +82,7 @@ export default function Login(){
             {/* Campo Contraseña */}
             <div className="form-group mb-4">
               <label className="form-label text-secondary small fw-semibold">Contraseña</label>
-              <input type="password" className="form-control" placeholder="••••••••"
+              <input type="password" name="password" className="form-control" placeholder="••••••••"
                 value={userdata.password} onChange={handleChange}
                 required disabled={loading}/>
             </div>
