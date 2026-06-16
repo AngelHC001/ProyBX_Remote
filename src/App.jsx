@@ -1,35 +1,24 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-import { AuthProvider } from "../backend/auth_context.jsx" 
-import { ProtectedRoute } from './components/protected_route.jsx'
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "../backend/auth_context.jsx" 
 import MainPage from "./pages/main-page.jsx";
 import Login from "./pages/login.jsx";
 
-
 function App() {
+  const {user, accessToken} = useAuth() || {};
+  
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* RUTA DEL LOGIN*/}
-          <Route path="/login" element={<Login/>}/>
+      <Routes>
+        {/* RUTA DEL LOGIN*/}
+        <Route path="/login" element={ accessToken && user ? 
+                          <Navigate to={'/checklist'} replace/> : <Login/>}/>
 
-          {/* La pagina principal*/}
-          <Route element={<ProtectedRoute/>}>
-            <Route path="/checklist" element={<MainPage/>}/>   
-          </Route>
+        {/* La pagina principal*/}
+        <Route path="/checklist" element={ accessToken && user ? <MainPage/> : 
+                                      <Navigate to={'/login'} replace/> }/> 
 
-          {/* fallback */}
-            <Route path="*" element={<Navigate to={'/login'}/>}/>
-          
-
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-
-    
-
-   
+        {/* fallback */}
+        <Route path="*" element={<Navigate to={'/login'}/>}/>
+      </Routes> 
   )
 }
 

@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { useAuth } from "../../backend/auth_context";
-import { useNavigate } from "react-router-dom";
 
 export default function Login(){
     const [userdata, setUserData] = useState({username: '', password: ''})
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const {login} = useAuth();
-    const navigate = useNavigate(); 
-
+    const { login } = useAuth();
 
     const handleChange = (e) =>{
         const {name, value} = e.target;
@@ -29,18 +26,12 @@ export default function Login(){
             });
 
             const data = await response.json();
-            console.log(data);
-            
+           
             if(!response.ok){
                 throw new Error(data.message || 'Ocurrio un error');
             }
 
             login(data.user, data.token);
-
-            setTimeout(() => {
-               navigate('/checklist');
-            },100);
-           
         } catch (error) {
             setError(error.message);
         }finally{
@@ -74,7 +65,7 @@ export default function Login(){
             {/* Campo Usuario */}
             <div className="form-group mb-3">
               <label className="form-label text-secondary small fw-semibold">Usuario</label>
-              <input type="text" name="username" className="form-control" placeholder="ej. auditor_01"
+              <input type="text" name="username" className="form-control" placeholder="ej. bxSucursal"
                 value={userdata.username} onChange={handleChange}
                 required disabled={loading}/>
             </div>
@@ -90,16 +81,13 @@ export default function Login(){
             {/* Botón de Acción */}
             <button type="submit"
               className="btn btn-danger w-100 fw-bold py-2 d-flex justify-content-center align-items-center"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
+              disabled={loading}>
+              {loading ? 
+                (<>
                   <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  Autenticando...
-                </>
-              ) : (
-                'Iniciar Sesión'
-              )}
+                  Autenticando...</>) 
+                :
+                ('Iniciar Sesión')}
             </button>
           </form>
         </div>
