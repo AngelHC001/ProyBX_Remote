@@ -139,4 +139,8 @@ body{
     flex: none;
   }
 
+  .header-check{
+    display: none;
+  }
+
 }

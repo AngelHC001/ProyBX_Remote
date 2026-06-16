@@ -3,6 +3,7 @@ import {useAuth} from '../../backend/auth_context.jsx'
 import { ViewContext } from '../components/view_context.jsx';
 import Section from "../components/section-template.jsx";
 
+import bxLogo from '../store/bxLogo.webp';
 const pestañas = [
   { key: 'bx1', index: 'main', btnName: 'Sucursal' },
   { key: 'bx2', index: 'caja', btnName: 'Caja' },
@@ -17,14 +18,22 @@ export default function MainPage(){
 
     return(
          <div className="container-fluid">    
-            <div className="d-flex justify-content-between p-2 border-bottom border-2 mb-2 gap-2">
-                <h1 className="fw-2"><i className="bi bi-clipboard2-check"/> Checklist</h1>
+            <div className="d-flex align-items-center justify-content-between p-2 border-bottom border-2 mb-2 gap-2">
+                
+                <div className="d-flex align-items-center gap-2">
+                  <img className="img-fluid p-2 rounded bg-danger" src={bxLogo} alt="bxLogo" 
+                  style={{objectFit: 'cover', maxHeight: '55px'}} />
+                  <h1 className="header-check">Cancún Checklist</h1>
+                  <i className="fs-1 bi bi-clipboard2-check text-danger"/> 
+                </div>
+               
                 <span className="badge rounded-pill text-bg-danger d-flex align-items-center">
                   Sucursal: {user.sucursal}
                 </span>
 
-                <button className="btn btn-danger btn-sm rounded-pill" onClick={() => logout()}>
-                    Cerrar Sesion
+                <button className="btn btn-danger btn-sm rounded-pill" 
+                  onClick={() => logout()} title="Cerrar Sesion">
+                    <i className="fs-3 bi bi-box-arrow-left"/>
                 </button>
             </div>
           

@@ -22,7 +22,8 @@ export default function Login(){
             const response = await fetch('http://localhost:8080/auth/login',{
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({username: userdata.username, password: userdata.password})
+                body: JSON.stringify({username: userdata.username, password: userdata.password}),
+                credentials: 'include'
             });
 
             const data = await response.json();
@@ -46,6 +47,7 @@ export default function Login(){
     <div className="container-fluid d-flex justify-content-center align-items-center vh-100 bg-light">
       <div className="card shadow-lg p-4" style={{ width: '100%', maxWidth: '400px', borderRadius: '12px' }}>
         
+
         <div className="card-body">
           {/* Encabezado del Sistema de Auditoría */}
           <div className="text-center mb-4">
