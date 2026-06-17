@@ -5,6 +5,8 @@ import busboy from "busboy";
 import { PassThrough } from "stream";
 import { Buffer } from "buffer";
 
+import {sanitizeText} from '../backend/utils.js';
+
 import dotenv from 'dotenv';
 dotenv.config({path: '.env.development'});
 
@@ -55,9 +57,6 @@ router.post('/upload', async(req,res) => {
     try {
         const tokenResponse = await auth2Client.getAccessToken();
         
-        console.log(tokenResponse);
-        
-
         if(!tokenResponse.token){
             throw new Error("NO SE PUDO GENERAR UN TOKEN ACCESS VALIDO");
         }
@@ -112,7 +111,6 @@ router.post('/upload', async(req,res) => {
         }); 
 
         console.log('PASO EL PROCESS');
-        
         bb.on('finish', async() => {
             try {
                 const metadata = JSON.parse(fields.metadata || '{}');
@@ -135,14 +133,16 @@ router.post('/upload', async(req,res) => {
 
                 console.log('FOLDER CREADO');
                 
-
                 //Crear y subir archivo de texto plano (.txt)
                 let contenidoTxt = `REPORTE: ${metadata.sucursal}\nFECHA: ${metadata.fecha}\n\n`;
                 Object.keys(secciones).forEach((seccion) => {
                     contenidoTxt += `\n[${seccion.toUpperCase()}]\n`;
                     secciones[seccion].forEach((p) => {
                         contenidoTxt += `Q${p.pregunta}: ${p.respuesta}\n`;
-                        if (p.respuesta === 'NO') contenidoTxt += `\t \t Obs: ${p.observaciones}\n`;
+                        if (p.respuesta === 'NO') {
+                            let obsLimpio = sanitizeText(p.observaciones)
+                            contenidoTxt += `\t Observaciones: ${obsLimpio}\n`;
+                        }
                     });
                 });
 

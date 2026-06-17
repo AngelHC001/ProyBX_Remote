@@ -73,7 +73,7 @@ export const useFormStore = create((set) => ({
 
         //LIMPIAR AL TERMINAR
         resetForm: () => set({
-            metadata: { sucursal: '', fecha: '' },
+            metadata: { sucursal: '', fecha: getFechaHoy() },
             secciones: { caja: [], alcn: [], sala: [], edif: [] }
         })
 }));

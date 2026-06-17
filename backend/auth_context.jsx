@@ -1,5 +1,7 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import { useFormStore } from '../src/store/useFormStore.js';
 
+const API_URL = import.meta.env.VITE_API_URL;
 //CREAR VARIABLE
 export const AuthContext = createContext(null);
 
@@ -8,12 +10,13 @@ export const AuthProvider = ({children}) => {
     const [user,setUser] = useState(null);
     const [accessToken, setAccessToken] = useState(null);
     const [loading, setLoading] = useState(false);
+    const { resetForm } = useFormStore();
    
     //Verificar sesion
     useEffect(() => {
         const verificarSesion = async() => {
             try {
-                const response = await fetch('http://localhost:8080/auth/verify', {
+                const response = await fetch(`${API_URL}/auth/verify`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -52,6 +55,7 @@ export const AuthProvider = ({children}) => {
         finally{
             setUser(null);
             setAccessToken(null);
+            resetForm();
         }
     }
 

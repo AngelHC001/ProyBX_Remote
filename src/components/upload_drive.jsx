@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useFormStore } from "../store/useFormStore";
 
+//link de sitio local-prod
+const API_URL = import.meta.env.VITE_API_URL;
 export function BotonDrive(){
     const { metadata, secciones } = useFormStore();
     const [isEnabled, SetIsEnabled] = useState(true);
     const [uploading, SetUploading] = useState(false);
 
-    //configuracion local HACERLO ENV
-    //const CLOUD_FUNCTION_URL = "https://REGION-PROYECTO.cloudfunctions.net/uploadAuditoria";
-    const CLOUD_FUNCTION_URL = "http://localhost:8080/drive/upload";
+    const CLOUD_FUNCTION_URL = `${API_URL}/drive/upload`;
     const TOKEN = import.meta.env.VITE_TOKEN_KEY;
 
     const handleUpload = async() => {

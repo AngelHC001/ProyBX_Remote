@@ -29,6 +29,12 @@ function Question({idPregunta, txt}){
         );
     };
 
+    const handleText = (e) => {
+        const texto = e.target.value;
+        const textoLimpio = texto.replace(/[<>]/g, '');
+        guardarCambios({observaciones: textoLimpio})
+    } 
+
      const handlePictures = (e, index) =>{
         const file =  e.target.files[0];
         if(file){
@@ -103,8 +109,8 @@ function Question({idPregunta, txt}){
                     (<div className="container w-50 d-flex flex-column gap-2">
                         { fields }
                         <label>Observaciones</label>
-                        <textarea className="form-control" value={observaciones}
-                        onChange={(e) => guardarCambios({observaciones: e.target.value})}/>
+                        <textarea className="form-control" value={observaciones} maxLength={500}
+                        onChange={(e) => handleText(e)}/>
                     </div>)
             }
         </div>
