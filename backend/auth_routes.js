@@ -56,4 +56,23 @@ router.get('/verify',async(req,res) => {
 });
 
 
+router.get('/exit',async(req,res) => {
+    //buscar la cookie
+    const token = req.cookies.auth_token;
+
+    if(!token){
+        return res.status(201).json({message: 'No hay sesion activa'});
+    }
+
+    try {
+        res.clearCookie('auth_token');
+        return res.status(200).json({message: 'CERRO LA SESION'});
+    } catch (error) {
+        return res.status(500).json({message: 'Ocurrio un error (verify) ' + error});
+    }
+});
+
+
+
+
 export default router;

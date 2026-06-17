@@ -26,6 +26,10 @@ export const AuthProvider = ({children}) => {
                     setUser(data.user);
                     setAccessToken(data.token);
                 }
+                else{
+                    setUser(null);
+                    resetForm();
+                }
             } catch (error) {
                 console.log('Sin sesion previa o token expiro');
             }
@@ -45,10 +49,11 @@ export const AuthProvider = ({children}) => {
     const logout = async() => {
         try {
             //RETIRAR LA COOKIE
-            await fetch('http://localhost:8080/auth/verify',{
+            await fetch(`${API_URL}/auth/exit`,{
                 method: 'GET',
                 credentials: 'include'
             });
+
         } catch (error) {
             console.error("Error al revocar cookie en servidor", error);
         } 
