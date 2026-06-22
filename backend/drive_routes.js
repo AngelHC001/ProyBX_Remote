@@ -5,7 +5,9 @@ import busboy from "busboy";
 import { PassThrough } from "stream";
 import { Buffer } from "buffer";
 
+
 import {sanitizeText} from '../backend/utils.js';
+
 
 import dotenv from 'dotenv';
 dotenv.config({path: '.env.development'});
@@ -15,6 +17,7 @@ const router = express.Router();
 //Variables de entorno en produccion
 //const API_TOKEN = process.env.VITE_TOKEN_KEY;
 const DRIVE_FOLDER = process.env.VITE_DRIVE_FOLDER;
+const DRIVE_FILE = process.env.VITE_DRIVE_FILE;
 
 //oauth
 const OAUTH_ID = process.env.VITE_OAUTH_ID;
@@ -39,17 +42,38 @@ auth2Client.on('tokens',(tokens) => {
     console.log('Acceso temporal renovado');
 });
 
-
 //USA EL CLIENT ID
 const drive = google.drive({
     version: "v3", 
     auth: auth2Client
 });
+ 
+//FUNCION PARA EXTRAER EXCLUSIVE.JSON DEL DRIVE
+let usuariosCache = null;
+let ultimaCarga = 0;
+const CACHE_TIME = 1000 * 60 * 5; //5 minutos de cache
 
+export async function getUsersFromDrive(){
+    // Si han pasado menos de 5 minutos, retorna la caché
+    if(usuariosCache && (Date.now() - ultimaCarga < CACHE_TIME)){
+        return usuariosCache;
+    }
+
+    //Si no, vuelve a consultar
+    const response = await drive.files.get({
+        fileId: DRIVE_FILE,
+        alt: 'media'
+    });
+
+    //El json
+    usuariosCache = response.data;
+    ultimaCarga = Date.now();
+    return usuariosCache;
+}
 
 router.post('/upload', async(req,res) => {
     //CONFIGURACION DE CORS
-    res.set('Access-Control-Allow-Origin', 'http://localhost:5173'); //COMPROBAR ORIGENES LIGA DE PRODUCCION
+    res.set('Access-Control-Allow-Origin', 'http://localhost:5173');
     res.set('Access-Control-Allow-Methods', 'POST', 'OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 

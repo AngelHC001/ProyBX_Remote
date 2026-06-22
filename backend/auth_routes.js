@@ -3,17 +3,20 @@ import process from 'process';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-import usuarios from './exclusive.json' with {type: 'json'};
-const SECRET = 'LA_CAJA_SECRETA_DEL_COMPARTIMENTO_SECRETO_QUE_ABRE_LA_CUERDA_SECRETA';
+import { getUsersFromDrive } from './drive_routes.js';
 
+const TOKEN_HOMEMADE = process.env.VITE_TOKEN_HOMEMADE;
 const router = express.Router();
 
 router.post('/login', async(req,res) => {
     const {username, password} = req.body;
 
     try {
+        //OBTENER JSON
+        const usuarios = await getUsersFromDrive();
+
         //Buscar usuario
-        const usuario  = usuarios.find((u) => (u.username === username));
+        const usuario = usuarios.find((u) => (u.username === username));
         if(!usuario) return res.status(401).json({message: 'CREDENCIALES INVALIDAS'});
 
         //Verificar contraseña
@@ -21,7 +24,7 @@ router.post('/login', async(req,res) => {
         if(!validPassword) return res.status(401).json({message: 'CREDENCIALES INVALIDAS'});
 
         //GENERAR TOKEN
-        const token = jwt.sign({id: usuario.id, suc: usuario.sucursal}, SECRET, {expiresIn: '2h'});
+        const token = jwt.sign({id: usuario.id, suc: usuario.sucursal}, TOKEN_HOMEMADE, {expiresIn: '2h'});
         
         //GUARDAR EL TOKEN EN UNA COOKIE
         res.cookie('auth_token',token,{
@@ -47,7 +50,7 @@ router.get('/verify',async(req,res) => {
     }
 
     try {
-        const decoded = jwt.verify(token,SECRET);
+        const decoded = jwt.verify(token, TOKEN_HOMEMADE);
         const user = {id: decoded.id, sucursal: decoded.suc }
         return res.status(200).json({token: token, user: user});
     } catch (error) {
