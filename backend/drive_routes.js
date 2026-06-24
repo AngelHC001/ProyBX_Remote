@@ -5,7 +5,6 @@ import busboy from "busboy";
 import { PassThrough } from "stream";
 import { Buffer } from "buffer";
 
-
 import {sanitizeText} from '../backend/utils.js';
 
 const router = express.Router();
@@ -25,7 +24,30 @@ const REDIRECT_URI = process.env.VITE_REDIRECT_URI;
 const auth2Client = new google.auth.OAuth2({
     clientId: OAUTH_ID,
     clientSecret:SECRET,
-    redirectUri:"https://developers.google.com/oauthplayground"
+    redirectUri: REDIRECT_URI
+});
+
+//HERRAMIENTA DE RENOVACION DE TOKEN
+router.get('/login-google',(req,res) => {
+    const authUrl = auth2Client.generateAuthUrl({
+        access_type:'offline',
+        scope: ['https://www.googleapis.com/auth/drive.file']
+    })
+    res.redirect(authUrl);
+});
+
+//CALLBACK PUESTO EN CLOUD CONSOLE
+router.get('/callback',async (req,res) => {
+    const {code} = req.query;
+    try {
+        const { tokens } = await auth2Client.getToken(code);
+        console.log('--- COPIA ESTE REFRESH TOKEN ---');
+        console.log(tokens.refresh_token);
+        console.log('--------------------------------');
+        res.send('Token generado. Revisa los logs de Render.');
+    } catch (err) {
+        res.status(500).send('Error al obtener token: ' + err.message);
+    }
 });
 
 auth2Client.setCredentials({ refresh_token: RFK });
@@ -43,7 +65,8 @@ const drive = google.drive({
     version: "v3", 
     auth: auth2Client
 });
- 
+
+
 //FUNCION PARA EXTRAER EXCLUSIVE.JSON DEL DRIVE
 let usuariosCache = null;
 let ultimaCarga = 0;
