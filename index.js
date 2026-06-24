@@ -1,5 +1,6 @@
-import dotenv from 'dotenv';
-dotenv.config({path: '.env.development'});
+//ESPACIO DE PRUEBAS
+//import dotenv from 'dotenv';
+//dotenv.config({path: '.env.development'});
 
 import express from 'express';
 import process from 'process';
@@ -16,7 +17,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 //Middleware globales
-app.use(cors({origin: 'https://proybx-remote.onrender.com', credentials: true}));
+app.use(cors({credentials: true}));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -29,5 +30,9 @@ app.get('*',(req,res) => {
     res.sendFile(path.join(__dirname,'dist','index.html'));
 })
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
 
-export const uploadAuditoria = app;
+//export const uploadAuditoria = app;
