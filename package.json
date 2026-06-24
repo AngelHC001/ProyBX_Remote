@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "npx @google-cloud/functions-framework --target=uploadAuditoria --port=8080"
+    "start": "node server.js"
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^2.0.0",

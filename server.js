@@ -22,11 +22,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 //Enrutamiento interno
-app.use('/auth',authRoutes);
-app.use('/drive',driveRoutes);
+app.use('/api/auth',authRoutes);
+app.use('/api/drive',driveRoutes);
 app.use(express.static(path.join(__dirname,'dist')))
 
-app.get('*',(req,res) => {
+app.get(/^(?!\/api).*/,(req,res) => {
     res.sendFile(path.join(__dirname,'dist','index.html'));
 })
 
