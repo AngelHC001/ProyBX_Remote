@@ -30,7 +30,4 @@ app.get('*',(req,res) => {
 })
 
 
-const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Servidor en puerto ${port}`));
-
 export const uploadAuditoria = app;
