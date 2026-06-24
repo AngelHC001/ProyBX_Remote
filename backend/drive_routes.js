@@ -8,14 +8,9 @@ import { Buffer } from "buffer";
 
 import {sanitizeText} from '../backend/utils.js';
 
-
-import dotenv from 'dotenv';
-dotenv.config({path: '.env.development'});
-
 const router = express.Router();
 
 //Variables de entorno en produccion
-
 const DRIVE_FOLDER = process.env.VITE_DRIVE_FOLDER;
 const DRIVE_FILE = process.env.VITE_DRIVE_FILE;
 
