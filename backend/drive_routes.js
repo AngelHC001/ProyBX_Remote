@@ -15,15 +15,16 @@ dotenv.config({path: '.env.development'});
 const router = express.Router();
 
 //Variables de entorno en produccion
-//const API_TOKEN = process.env.VITE_TOKEN_KEY;
+
 const DRIVE_FOLDER = process.env.VITE_DRIVE_FOLDER;
 const DRIVE_FILE = process.env.VITE_DRIVE_FILE;
 
 //oauth
 const OAUTH_ID = process.env.VITE_OAUTH_ID;
-const SECRET = process.env.VITE_FORAIGN_KEY;
-const RFK = process.env.VITE_REFRESH_TOOL;
+const SECRET = process.env.VITE_SECRET_KEY;
+const RFK = process.env.VITE_REFRESH_TOKEN;
 
+const REDIRECT_URI = process.env.VITE_REDIRECT_URI;
 
 //AUTENTICACION USANDO EL CLIENT ID
 const auth2Client = new google.auth.OAuth2({
