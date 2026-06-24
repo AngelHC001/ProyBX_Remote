@@ -16,8 +16,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 
+const corsOptions = { origin: process.env.NODE_ENV === 'production' ?
+    'https://proybx-remote.onrender.com' : 'http://localhost:5173'
+    , credentials: true }
+
 //Middleware globales
-app.use(cors({credentials: true}));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 

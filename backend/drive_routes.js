@@ -26,7 +26,7 @@ const auth2Client = new google.auth.OAuth2({
     clientSecret:SECRET,
     redirectUri: REDIRECT_URI
 });
-
+/*
 //HERRAMIENTA DE RENOVACION DE TOKEN
 router.get('/login-google',(req,res) => {
     const authUrl = auth2Client.generateAuthUrl({
@@ -48,7 +48,7 @@ router.get('/callback',async (req,res) => {
     } catch (err) {
         res.status(500).send('Error al obtener token: ' + err.message);
     }
-});
+});*/
 
 auth2Client.setCredentials({ refresh_token: RFK });
 
@@ -92,7 +92,6 @@ export async function getUsersFromDrive(){
 
 router.post('/upload', async(req,res) => {
     //CONFIGURACION DE CORS
-    res.set('Access-Control-Allow-Origin', 'http://localhost:5173');
     res.set('Access-Control-Allow-Methods', 'POST', 'OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
