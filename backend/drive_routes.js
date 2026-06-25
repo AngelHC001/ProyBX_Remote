@@ -26,8 +26,9 @@ const auth2Client = new google.auth.OAuth2({
     clientSecret:SECRET,
     redirectUri: REDIRECT_URI
 });
+
 /*
-//HERRAMIENTA DE RENOVACION DE TOKEN
+//HERRAMIENTA AUXILIAR PARA REFRESH TOKEN PERMANENTE, TAREA YA RESUELTA
 router.get('/login-google',(req,res) => {
     const authUrl = auth2Client.generateAuthUrl({
         access_type:'offline',
@@ -127,6 +128,8 @@ router.post('/upload', async(req,res) => {
 
     console.log('PASO FILTROS');
     
+    //AQUI SE DETIENE EN PRODUCCION
+
     try {        
         const bb = busboy({ headers: req.headers });
         const fields = {};
@@ -227,7 +230,9 @@ router.post('/upload', async(req,res) => {
             }
         });
 
-        bb.end(req.rawBody);    
+        //bb.end(bb)
+        //bb.end(req.rawBody);    
+        req.pipe(bb);
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
