@@ -2,10 +2,11 @@ import express from 'express';
 import process from 'process';
 import { google } from "googleapis";
 import busboy from "busboy";
-import { PassThrough } from "stream";
-import { Buffer } from "buffer";
+//import { PassThrough } from "stream";
+//import { Buffer } from "buffer";
 
 import {sanitizeText} from '../backend/utils.js';
+///import { promises } from 'dns';
 
 const router = express.Router();
 
@@ -127,102 +128,87 @@ router.post('/upload', async(req,res) => {
     }
 
     console.log('PASO FILTROS');
-    
-    //AQUI SE DETIENE EN PRODUCCION
 
-    try {        
+    try {
+        //INICIALIZAR        
         const bb = busboy({ headers: req.headers });
         const fields = {};
-        const filesToUpload = [];
+        const PromisesToUpload = [];
 
-        //PROCESAMOS DATOS DEL FORMULARIO
-        bb.on('field', (fieldname,val) => {
-           fields[fieldname] = val; 
+        //ZERO - EXTRAER DATOS ENVIADOS
+        const metadata = JSON.parse(fields.metadata || '{}');
+        const secciones = JSON.parse(fields.secciones || '{}');
+
+        //1. CREAR CARPETA
+        const hoy = new Date().toISOString().split('T')[0];
+        const folderName = `${metadata.sucursal?.replace(/\s+/g, '_')}_${hoy}`;
+
+        const folderResponse = await drive.files.create({
+            requestBody: { 
+                name: folderName,
+                mimeType: 'application/vnd.google-apps.folder',
+                parents: [DRIVE_FOLDER]
+            },
+            fields: 'id'
+        });
+            
+        const folderId = folderResponse.data.id;
+        console.log('FOLDER CREADO');
+
+        //2. PROCESAR TEXTO DEL FORMULARIO
+        bb.on('field', (fieldname,val) => { fields[fieldname] = val; });
+        
+        let contenidoTxt = `REPORTE: ${metadata.sucursal}\nFECHA: ${metadata.fecha}\n\n`;
+        Object.keys(secciones).forEach((seccion) => {
+            contenidoTxt += `\n[${seccion.toUpperCase()}]\n`;
+            secciones[seccion].forEach((p) => {
+                contenidoTxt += `Q${p.pregunta}: ${p.respuesta}\n`;
+                if (p.respuesta === 'NO') {
+                    let obsLimpio = sanitizeText(p.observaciones)
+                    contenidoTxt += `\t Observaciones: ${obsLimpio}\n`;
+                }
+            });
         });
 
-        //PROCESAR IMAGENES
+        console.log('TEXTO PROCESADO');
+
+        await drive.files.create({
+            requestBody: { 
+                name: 'reporte_datos.txt', 
+                parents: [folderId]
+            },
+            media: { 
+                mimeType: 'text/plain', 
+                body: contenidoTxt 
+            }
+        });
+        console.log('TEXTO SUBIDO');
+                
+        
+        //3. SUBIR IMAGENES A SU CARPETA - STREAMING DIRECTO
         bb.on('file', (fieldname,file,info) => {
             const { filename, mimeType } = info;
-            const buffers = [];
 
-            file.on('data', (data) => buffers.push(data));
-            file.on('end', () => {
-                filesToUpload.push({
-                    name: filename,
-                    mimeType: mimeType,
-                    content: Buffer.concat(buffers)
-                })
+            const p = drive.files.create({
+                requestBody: {
+                    name: filename, 
+                    parents:[folderId]
+                },
+                media: {
+                    mimeType: mimeType, 
+                    body: file
+                }
             });
-        }); 
 
-        console.log('PASO EL PROCESS');
+            PromisesToUpload.push(p);
+        }); 
+        console.log('IMAGENES PROCESADAS EN COLA');
+       
         bb.on('finish', async() => {
             try {
-                const metadata = JSON.parse(fields.metadata || '{}');
-                const secciones = JSON.parse(fields.secciones || '{}');
-
-                //Crear carpeta
-                const hoy = new Date().toISOString().split('T')[0];
-                const folderName = `${metadata.sucursal?.replace(/\s+/g, '_')}_${hoy}`;
-                
-                const folderResponse = await drive.files.create({
-                    requestBody: { 
-                        name: folderName,
-                        mimeType: 'application/vnd.google-apps.folder',
-                        parents: [DRIVE_FOLDER]
-                    },
-                    fields: 'id'
-                });
-            
-                const folderId = folderResponse.data.id;
-
-                console.log('FOLDER CREADO');
-                
-                //Crear y subir archivo de texto plano (.txt)
-                let contenidoTxt = `REPORTE: ${metadata.sucursal}\nFECHA: ${metadata.fecha}\n\n`;
-                Object.keys(secciones).forEach((seccion) => {
-                    contenidoTxt += `\n[${seccion.toUpperCase()}]\n`;
-                    secciones[seccion].forEach((p) => {
-                        contenidoTxt += `Q${p.pregunta}: ${p.respuesta}\n`;
-                        if (p.respuesta === 'NO') {
-                            let obsLimpio = sanitizeText(p.observaciones)
-                            contenidoTxt += `\t Observaciones: ${obsLimpio}\n`;
-                        }
-                    });
-                });
-
-                await drive.files.create({
-                    requestBody: { 
-                        name: 'reporte_datos.txt', 
-                        parents: [folderId]
-                    },
-                    media: { 
-                        mimeType: 'text/plain', 
-                        body: contenidoTxt 
-                    }
-                });
-
-                console.log('TEXTO PLANO LISTO');
-                
-
-                //Subir las imágenes asociadas vinculándolas a la carpeta
-                for(const fileObj of filesToUpload){
-                    const bufferStream = new PassThrough();
-                    bufferStream.end(fileObj.content);
-                    
-                    await drive.files.create({
-                        requestBody: {
-                            name: fileObj.name, 
-                            parents:[folderId]
-                        },
-                        media: {
-                            mimeType: fileObj.mimeType, 
-                            body: bufferStream
-                        }
-                    });
-                }
-
-                console.log('IMAGENES LISTAS');
+                await Promise.all(PromisesToUpload); //espera a que todas las fotos terminen
+                console.log('IMAGENES SUBIDAS');
+              
                 return res.status(200).json({status: 'success', message: 'Sincronizado con exito'});
             } catch (error) {
                 console.error(error);
@@ -230,8 +216,6 @@ router.post('/upload', async(req,res) => {
             }
         });
 
-        //bb.end(bb)
-        //bb.end(req.rawBody);    
         req.pipe(bb);
     } catch (error) {
         return res.status(500).json({ error: error.message });
