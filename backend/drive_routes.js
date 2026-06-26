@@ -6,7 +6,7 @@ import { PassThrough } from "stream";
 import { Buffer } from "buffer";
 
 import { auth2Client, verifyCredentials } from './auth_config.js';
-import {sanitizeText} from './utils.js';
+import { crearEstructuraReporte } from './drive_service.js';
 const router = express.Router();
 
 //Variables de entorno en produccion
@@ -66,8 +66,6 @@ router.post('/upload', ensureAuth ,async(req,res) => {
     
     console.log('PASO FILTROS');
     
-    
-
     try {        
         const bb = busboy({ headers: req.headers });
         const fields = {};
@@ -99,50 +97,8 @@ router.post('/upload', ensureAuth ,async(req,res) => {
                 const metadata = JSON.parse(fields.metadata || '{}');
                 const secciones = JSON.parse(fields.secciones || '{}');
 
-                //Crear carpeta
-                const hoy = new Date().toISOString().split('T')[0];
-                const folderName = `${metadata.sucursal?.replace(/\s+/g, '_')}_${hoy}`;
-                
-                const folderResponse = await drive.files.create({
-                    requestBody: { 
-                        name: folderName,
-                        mimeType: 'application/vnd.google-apps.folder',
-                        parents: [DRIVE_FOLDER]
-                    },
-                    fields: 'id'
-                });
-            
-                const folderId = folderResponse.data.id;
-
-                console.log('FOLDER CREADO');
-                
-                //Crear y subir archivo de texto plano (.txt)
-                let contenidoTxt = `REPORTE: ${metadata.sucursal}\nFECHA: ${metadata.fecha}\n\n`;
-                Object.keys(secciones).forEach((seccion) => {
-                    contenidoTxt += `\n[${seccion.toUpperCase()}]\n`;
-                    secciones[seccion].forEach((p) => {
-                        contenidoTxt += `Q${p.pregunta}: ${p.respuesta}\n`;
-                        if (p.respuesta === 'NO') {
-                            let obsLimpio = sanitizeText(p.observaciones)
-                            contenidoTxt += `\t Observaciones: ${obsLimpio}\n`;
-                        }
-                    });
-                });
-
-                await drive.files.create({
-                    requestBody: { 
-                        name: 'reporte_datos.txt', 
-                        parents: [folderId]
-                    },
-                    media: { 
-                        mimeType: 'text/plain', 
-                        body: contenidoTxt 
-                    }
-                });
-
-                console.log('TEXTO PLANO LISTO');
-                
-
+                const folderId = await crearEstructuraReporte(drive, DRIVE_FOLDER, metadata, secciones);
+               
                 //Subir las imágenes asociadas vinculándolas a la carpeta
                 for(const fileObj of filesToUpload){
                     const bufferStream = new PassThrough();
