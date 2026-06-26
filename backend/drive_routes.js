@@ -19,7 +19,7 @@ const drive = google.drive({ version: "v3", auth: auth2Client });
 //MIDDLEWARE DE AUTENTICACION
 const ensureAuth = async(req, res, next) => {
     const isValid = verifyCredentials();
-    if(isValid){
+    if(!isValid){
         return res.status(401).json({ error: "Fallo en la autenticación de Google" });
     }
     //lo que sigue dentro del post    

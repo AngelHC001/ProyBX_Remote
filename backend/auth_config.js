@@ -21,6 +21,7 @@ export async function verifyCredentials(){
     try {
         const tokenResponse = await auth2Client.getAccessToken();
         if (!tokenResponse.token) throw new Error("NO SE PUDO GENERAR UN TOKEN ACCESS VALIDO");
+        console.log('AUTENTICADO');
         return true;
     } catch (authError) {
         console.error("Error crítico de autenticación:", authError.message);
