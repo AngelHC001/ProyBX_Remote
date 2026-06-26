@@ -3,7 +3,7 @@ import process from 'process';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-import { getUsersFromDrive } from './drive_routes.js';
+import { getUsersFromDrive } from './drive_config.js';
 
 const TOKEN_HOMEMADE = process.env.VITE_TOKEN_HOMEMADE;
 const router = express.Router();
