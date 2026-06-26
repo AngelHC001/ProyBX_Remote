@@ -2,12 +2,8 @@ import express from 'express';
 import process from 'process';
 import { google } from "googleapis";
 import busboy from "busboy";
-//import { PassThrough } from "stream";
-//import { Buffer } from "buffer";
 
 import {sanitizeText} from '../backend/utils.js';
-///import { promises } from 'dns';
-
 const router = express.Router();
 
 //Variables de entorno en produccion
@@ -133,14 +129,18 @@ router.post('/upload', async(req,res) => {
         //INICIALIZAR        
         const bb = busboy({ headers: req.headers });
         const fields = {};
-        const filesToUpload = [];
+        const fileQueue = { caja:[], alcn:[], sala:[], edif: [] };
 
         //2. PROCESAR TEXTO DEL FORMULARIO
         bb.on('field', (fieldname,val) => { fields[fieldname] = val; });             
         
         //3. SUBIR IMAGENES A SU CARPETA - STREAMING DIRECTO
         bb.on('file', (fieldname,file,info) => {
-            filesToUpload.push({fieldname,file,info})
+            const section = Object.keys(fileQueue).find(s => s.fieldname.startsWith(s));
+            if(section){
+                fileQueue[section].push({file,info});
+            }
+
         }); 
         console.log('IMAGENES PROCESADAS EN COLA');
        
@@ -186,17 +186,20 @@ router.post('/upload', async(req,res) => {
                 });
                 console.log('TEXTO SUBIDO');
 
-                const promisesToUpload = filesToUpload.map((f) => {
-                    return drive.files.create({
-                        requestBody: { name: f.info.filename, parents:[folderId] },
-                        media: { mimeType: f.info.mimeType, body: f.file }
-                    });
-                });
-              
-                await Promise.all(promisesToUpload); //espera a que todas las fotos terminen
+                for (const section in fileQueue) {
+                    if(fileQueue[section].length > 0){
+                        console.log('SUBIENDO ARCHIVOS SECCION '+ section);
+                        await Promise.all(fileQueue[section].map(f => 
+                            drive.files.create({
+                                requestBody: { name: f.info.filename, parents:[folderId] },
+                                media: { mimeType: f.info.mimeType, body: f.file }
+                            })
+                        ));
+                    }
+                }
                 console.log('IMAGENES SUBIDAS');
-              
-                return res.status(200).json({status: 'success', message: 'Sincronizado con exito'});
+                
+                return res.status(200).json({status: 'success'});
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ error: 'Error al procesar la subida a Drive: ' + error.message });
