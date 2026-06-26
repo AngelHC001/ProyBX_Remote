@@ -5,44 +5,26 @@ import busboy from "busboy";
 import { PassThrough } from "stream";
 import { Buffer } from "buffer";
 
+import { auth2Client, verifyCredentials } from './auth_config.js';
 import {sanitizeText} from './utils.js';
-
 const router = express.Router();
 
 //Variables de entorno en produccion
 const DRIVE_FOLDER = process.env.VITE_DRIVE_FOLDER;
 const DRIVE_FILE = process.env.VITE_DRIVE_FILE;
 
-//oauth
-const OAUTH_ID = process.env.VITE_OAUTH_ID;
-const SECRET = process.env.VITE_SECRET_KEY;
-const RFK = process.env.VITE_REFRESH_TOKEN;
-
-const REDIRECT_URI = process.env.VITE_REDIRECT_URI;
-
-//AUTENTICACION USANDO EL CLIENT ID
-const auth2Client = new google.auth.OAuth2({
-    clientId: OAUTH_ID,
-    clientSecret:SECRET,
-    redirectUri: REDIRECT_URI
-});
-
-auth2Client.setCredentials({ refresh_token: RFK });
-
-//EVENTOS DE CAMBIO
-auth2Client.on('tokens',(tokens) => {
-    if(tokens.refresh_token){
-        console.log('Nuevo token');
-    }
-    console.log('Acceso temporal renovado');
-});
-
 //USA EL CLIENT ID
-const drive = google.drive({
-    version: "v3", 
-    auth: auth2Client
-});
+const drive = google.drive({ version: "v3", auth: auth2Client });
 
+//MIDDLEWARE DE AUTENTICACION
+const ensureAuth = async(req, res, next) => {
+    const isValid = verifyCredentials();
+    if(isValid){
+        return res.status(401).json({ error: "Fallo en la autenticación de Google" });
+    }
+    //lo que sigue dentro del post    
+    next();
+}
 
 //FUNCION PARA EXTRAER EXCLUSIVE.JSON DEL DRIVE
 let usuariosCache = null;
@@ -67,44 +49,24 @@ export async function getUsersFromDrive(){
     return usuariosCache;
 }
 
-router.post('/upload', async(req,res) => {
+router.post('/upload', ensureAuth ,async(req,res) => {
     //CONFIGURACION DE CORS
     res.set('Access-Control-Allow-Methods', 'POST', 'OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if(req.method === 'OPTIONS'){ return res.status(204).send(''); }
 
-    //VERIFICACION DE CREDENCIALES
-    try {
-        const tokenResponse = await auth2Client.getAccessToken();
-        
-        if(!tokenResponse.token){
-            throw new Error("NO SE PUDO GENERAR UN TOKEN ACCESS VALIDO");
-        }
-        
-        console.log("¡Autenticación OAUTH exitoso!");
-    } catch (authError) {
-        console.error("Error crítico de autenticación:", authError.message);
-        return res.status(401).json({ error: `La cuenta no pudo autenticarse: ${authError.message}` });
-    }
-
-    //FILTROS DE OPERACION
-    if(req.method === 'OPTIONS'){
-        return res.status(204).send('');
-    }
-
-    //SECURITY CONSTRAINT 1 -- VALIDACION DE API TOKEN SECRETO
+    //FILTROS DE OPERACION -- VALIDACION DE API TOKEN SECRETO
     const authHeader = req.headers.authorization;
-    
     if(!authHeader | !authHeader.startsWith('Bearer ')){
         return res.status(401).json({ error: 'ACCESO NO AUTORIZADO, TOKEN INVALIDO' });
     }
 
-    if(req.method !== 'POST'){
-        return res.status(405).json({error: 'METODO NO PERMITIDO'});
-    }
-
+    //VALIDACION DE METODO
+    if(req.method !== 'POST'){ return res.status(405).json({error: 'METODO NO PERMITIDO'}); }
+    
     console.log('PASO FILTROS');
     
-    //AQUI SE DETIENE EN PRODUCCION
+    
 
     try {        
         const bb = busboy({ headers: req.headers });
