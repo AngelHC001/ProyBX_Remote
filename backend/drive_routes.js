@@ -2,11 +2,13 @@ import express from 'express';
 import process from 'process';
 import { google } from "googleapis";
 import busboy from "busboy";
-import { PassThrough } from "stream";
-import { Buffer } from "buffer";
 
 import { auth2Client, verifyCredentials } from './auth_config.js';
 import { crearEstructuraReporte } from './drive_service.js';
+
+import { Buffer } from 'buffer';
+import { PassThrough } from 'stream';
+
 const router = express.Router();
 
 //Variables de entorno en produccion
@@ -49,7 +51,7 @@ export async function getUsersFromDrive(){
     return usuariosCache;
 }
 
-router.post('/upload', ensureAuth ,async(req,res) => {
+router.post('/upload', ensureAuth, async(req,res) => {
     //CONFIGURACION DE CORS
     res.set('Access-Control-Allow-Methods', 'POST', 'OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -79,8 +81,10 @@ router.post('/upload', ensureAuth ,async(req,res) => {
         //PROCESAR IMAGENES
         bb.on('file', (fieldname,file,info) => {
             const { filename, mimeType } = info;
-            const buffers = [];
-
+            
+            filesToUpload.push({filename, mimeType, stream: file});
+            
+            /*const buffers = [];
             file.on('data', (data) => buffers.push(data));
             file.on('end', () => {
                 filesToUpload.push({
@@ -88,7 +92,7 @@ router.post('/upload', ensureAuth ,async(req,res) => {
                     mimeType: mimeType,
                     content: Buffer.concat(buffers)
                 })
-            });
+            });*/
         }); 
 
         console.log('PASO EL PROCESS');
@@ -100,24 +104,39 @@ router.post('/upload', ensureAuth ,async(req,res) => {
                 const folderId = await crearEstructuraReporte(drive, DRIVE_FOLDER, metadata, secciones);
                
                 //Subir las imágenes asociadas vinculándolas a la carpeta
-                for(const fileObj of filesToUpload){
+                const uploadResults = await Promise.allSettled(
+                    filesToUpload.map(img => 
+                        drive.files.create({
+                            requestBody: { name: img.filename, parents:[folderId] },
+                            media: { mimeType: img.mimeType, body: img.stream }
+                        })
+                    )
+                );
+
+                const fallos = uploadResults.filter(r => r.status === 'rejected');
+                if(fallos > 0){
+                    console.error('Algunas imagenes fallaron al subir ' + fallos);
+                }
+
+
+                /*for(const fileObj of filesToUpload){
                     const bufferStream = new PassThrough();
                     bufferStream.end(fileObj.content);
                     
                     await drive.files.create({
                         requestBody: {
-                            name: fileObj.name, 
+                            name: fileObj.filename, 
                             parents:[folderId]
                         },
                         media: {
                             mimeType: fileObj.mimeType, 
-                            body: bufferStream
+                            body: fileObj.file
                         }
                     });
-                }
+                }*/
 
                 console.log('IMAGENES LISTAS');
-                return res.status(200).json({status: 'success', message: 'Sincronizado con exito'});
+                return res.status(200).json({status: 'success', message: 'Sincronizado con exito', fallos: fallos.length});
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ error: 'Error al procesar la subida a Drive: ' + error.message });

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useFormStore } from "../store/useFormStore";
+import imageCompression from "browser-image-compression";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const HOMEMADE_TOKEN = import.meta.env.VITE_HOMEMADE_TOKEN;
+
 
 export function BotonDrive(){
     const { metadata, secciones } = useFormStore();
@@ -17,10 +19,12 @@ export function BotonDrive(){
             return;
         }
 
-        SetUploading(true);
-        const formData = new FormData();
+        SetUploading(true);        
         
         //Adjuntar metadatos
+        const formData = new FormData();
+        const imagePromises = [];
+
         formData.append('metadata',JSON.stringify(metadata));
         formData.append('secciones', JSON.stringify(secciones));
 
@@ -29,16 +33,29 @@ export function BotonDrive(){
             secciones[seccion].forEach((p) => {
                 if(p.respuesta === 'NO' && p.fotos){
                     p.fotos.forEach((fotoFile,index) => {
-                        if(fotoFile instanceof File){
-                            const extension = fotoFile.name.split('.').pop() || 'png';
-                            const nombreImagen = `${seccion}_q${p.pregunta}_falla${index + 1}.${extension}`;
                         
-                            formData.append('images',fotoFile,nombreImagen);
-                        }
-                    });
+                        if(fotoFile instanceof File){
+                            imagePromises.push((async()=>{
+                                try {
+                                    const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1200, useWebWorker: true, };
+                                    const compressedFile = await imageCompression(fotoFile,options);
+
+                                    const extension = fotoFile.name.split('.').pop() || 'png';
+                                    const nombreImagen = `${seccion}_q${p.pregunta}_falla${index + 1}.${extension}`;
+                                    formData.append('images',compressedFile, nombreImagen);
+                                } catch (error) {
+                                    console.error("Error al comprimir:", error);
+                                    formData.append('images', fotoFile, fotoFile.name);
+                                }
+                            })());
+                        }//if
+                    });//fotos
                 }
-            });
-        });
+            });//forEach
+        });//forEach
+
+        //esperar que todas las imagenes se compriman
+        await Promise.all(imagePromises)
 
         //EJECUTAR PETICION
         try {
@@ -62,6 +79,8 @@ export function BotonDrive(){
             SetUploading(false);
         }
     }
+
+
     return(
         <div className="text-center alert alert-danger rounded">
             <div className="form-check-inline">
