@@ -11,22 +11,20 @@ export function BotonDrive(){
     const [isEnabled, SetIsEnabled] = useState(true);
     const [uploading, SetUploading] = useState(false);
 
-    const CLOUD_FUNCTION_URL = `${API_URL}/drive/upload`;
-    
+    const GET_TOKEN = `${API_URL}/drive/get_token`;
+    const PHASE_ONE_URL = `${API_URL}/drive/upload`;
+   
     const handleUpload = async() => {
         if(!metadata.sucursal || !metadata.fecha){
             alert("Por favor, registre la sucursal y la fecha antes de enviar.");
             return;
         }
-
         SetUploading(true);        
         
+       
         //Adjuntar metadatos
-        const formData = new FormData();
+        /*
         const imagePromises = [];
-
-        formData.append('metadata',JSON.stringify(metadata));
-        formData.append('secciones', JSON.stringify(secciones));
 
         //Extraer y adjuntar imagenes al formData
         Object.keys(secciones).forEach((seccion) => {
@@ -55,23 +53,33 @@ export function BotonDrive(){
         });//forEach
 
         //esperar que todas las imagenes se compriman
-        await Promise.all(imagePromises)
+        //await Promise.all(imagePromises)
+        console.log('IMAGENES PROCESADAS');*/
+        
 
         //EJECUTAR PETICION
         try {
-            const response = await fetch(CLOUD_FUNCTION_URL,{
+            const formData = new FormData();
+            formData.append('metadata',JSON.stringify(metadata));
+            formData.append('secciones', JSON.stringify(secciones));
+        
+            //const MainRes = await fetch(GET_TOKEN);
+            //const { accessTkn } = await res.json();
+
+            //FASE 1 - CREAR FOLDER Y TXT
+            const responseOne = await fetch(PHASE_ONE_URL,{
                 method: 'POST',
                 body: formData,
                 headers: {'Authorization' : `Bearer ${HOMEMADE_TOKEN}`}
             });
 
-            const result = await response.json();
-
-            if(!response.ok){
-                throw new Error(result.error || 'Error desconocido en el servidor');
-            }
-
+            const result = await responseOne.json();
+            const folderDestiny = result.folderDestiny;
+            if(!responseOne.ok) throw new Error(result.error || 'Error desconocido en el servidor');
+            
+            console.log(folderDestiny);
             alert('Reporte enviado al drive central!');
+            
         } catch (error) {
             console.error(error);
             alert(`Ocurrio un error ${error}`);

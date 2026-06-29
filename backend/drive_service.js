@@ -17,6 +17,7 @@ export async function crearEstructuraReporte(drive, parentFolder, metadata, secc
     const folderId = folderResponse.data.id;
     console.log('FOLDER CREADO');
     
+    
     //Crear archivo txt
     let contenidoTxt = `REPORTE: ${metadata.sucursal}\nFECHA: ${metadata.fecha}\n\n`;
     Object.keys(secciones).forEach((seccion) => {
@@ -36,7 +37,7 @@ export async function crearEstructuraReporte(drive, parentFolder, metadata, secc
         media: { mimeType: 'text/plain', body: contenidoTxt }
     });
 
-    console.log('TEXTO PLANO LISTO');
+    
     return folderId;                
 }
 

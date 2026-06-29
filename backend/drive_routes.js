@@ -3,11 +3,8 @@ import process from 'process';
 import { google } from "googleapis";
 import busboy from "busboy";
 
-import { auth2Client, verifyCredentials } from './auth_config.js';
+import { auth2Client } from './auth_config.js';
 import { crearEstructuraReporte } from './drive_service.js';
-
-import { Buffer } from 'buffer';
-import { PassThrough } from 'stream';
 
 const router = express.Router();
 
@@ -17,16 +14,6 @@ const DRIVE_FILE = process.env.VITE_DRIVE_FILE;
 
 //USA EL CLIENT ID
 const drive = google.drive({ version: "v3", auth: auth2Client });
-
-//MIDDLEWARE DE AUTENTICACION
-const ensureAuth = async(req, res, next) => {
-    const isValid = verifyCredentials();
-    if(!isValid){
-        return res.status(401).json({ error: "Fallo en la autenticación de Google" });
-    }
-    //lo que sigue dentro del post    
-    next();
-}
 
 //FUNCION PARA EXTRAER EXCLUSIVE.JSON DEL DRIVE
 let usuariosCache = null;
@@ -51,7 +38,31 @@ export async function getUsersFromDrive(){
     return usuariosCache;
 }
 
-router.post('/upload', ensureAuth, async(req,res) => {
+/*
+//MIDDLEWARE DE AUTENTICACION
+const ensureAuth = async(req, res, next) => {
+    const isValid = verifyCredentials();
+    if(!isValid){
+        return res.status(401).json({ error: "Fallo en la autenticación de Google" });
+    }
+    //lo que sigue dentro del post    
+    next();
+}
+*/
+
+router.get('/get_token', async(req,res) => {
+    try {
+        const tokenResponse = await auth2Client.getAccessToken();
+        if (!tokenResponse.token) throw new Error("NO SE PUDO GENERAR UN TOKEN ACCESS VALIDO");
+        console.log('AUTENTICADO');
+        return res.status(200).json({access_token: tokenResponse.token});
+    } catch (authError) {
+        return res.status(500).json({message: "Error crítico de autenticación: " + authError});
+    }
+});
+
+
+router.post('/upload', async(req,res) => {
     //CONFIGURACION DE CORS
     res.set('Access-Control-Allow-Methods', 'POST', 'OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -65,78 +76,26 @@ router.post('/upload', ensureAuth, async(req,res) => {
 
     //VALIDACION DE METODO
     if(req.method !== 'POST'){ return res.status(405).json({error: 'METODO NO PERMITIDO'}); }
-    
     console.log('PASO FILTROS');
     
     try {        
         const bb = busboy({ headers: req.headers });
         const fields = {};
-        const filesToUpload = [];
 
-        //PROCESAMOS DATOS DEL FORMULARIO
+        //PROCESAMOS DATOS DEL FORMULARIO PURO TEXTO
         bb.on('field', (fieldname,val) => {
            fields[fieldname] = val; 
         });
 
-        //PROCESAR IMAGENES
-        bb.on('file', (fieldname,file,info) => {
-            const { filename, mimeType } = info;
-            
-            filesToUpload.push({filename, mimeType, stream: file});
-            
-            /*const buffers = [];
-            file.on('data', (data) => buffers.push(data));
-            file.on('end', () => {
-                filesToUpload.push({
-                    name: filename,
-                    mimeType: mimeType,
-                    content: Buffer.concat(buffers)
-                })
-            });*/
-        }); 
-
-        console.log('PASO EL PROCESS');
         bb.on('finish', async() => {
             try {
                 const metadata = JSON.parse(fields.metadata || '{}');
                 const secciones = JSON.parse(fields.secciones || '{}');
 
                 const folderId = await crearEstructuraReporte(drive, DRIVE_FOLDER, metadata, secciones);
-               
-                //Subir las imágenes asociadas vinculándolas a la carpeta
-                const uploadResults = await Promise.allSettled(
-                    filesToUpload.map(img => 
-                        drive.files.create({
-                            requestBody: { name: img.filename, parents:[folderId] },
-                            media: { mimeType: img.mimeType, body: img.stream }
-                        })
-                    )
-                );
+                console.log('FOLDER Y TEXTO PLANO LISTOS');
 
-                const fallos = uploadResults.filter(r => r.status === 'rejected');
-                if(fallos > 0){
-                    console.error('Algunas imagenes fallaron al subir ' + fallos);
-                }
-
-
-                /*for(const fileObj of filesToUpload){
-                    const bufferStream = new PassThrough();
-                    bufferStream.end(fileObj.content);
-                    
-                    await drive.files.create({
-                        requestBody: {
-                            name: fileObj.filename, 
-                            parents:[folderId]
-                        },
-                        media: {
-                            mimeType: fileObj.mimeType, 
-                            body: fileObj.file
-                        }
-                    });
-                }*/
-
-                console.log('IMAGENES LISTAS');
-                return res.status(200).json({status: 'success', message: 'Sincronizado con exito', fallos: fallos.length});
+                return res.status(200).json({status: 'success', message: 'Sincronizado con exito', folderDestiny: folderId });
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ error: 'Error al procesar la subida a Drive: ' + error.message });

@@ -1,7 +1,6 @@
 import process from "process";
 import { google } from "googleapis";
 
-
 //AUTENTICACION USANDO EL CLIENT ID
 const auth2Client = new google.auth.OAuth2({
     clientId: process.env.VITE_OAUTH_ID,
