@@ -63,8 +63,8 @@ export function BotonDrive(){
             formData.append('metadata',JSON.stringify(metadata));
             formData.append('secciones', JSON.stringify(secciones));
         
-            //const MainRes = await fetch(GET_TOKEN);
-            //const { accessTkn } = await res.json();
+            const MainRes = await fetch(GET_TOKEN);
+            const { access_token } = await MainRes.json();
 
             //FASE 1 - CREAR FOLDER Y TXT
             const responseOne = await fetch(PHASE_ONE_URL,{
