@@ -46,14 +46,17 @@ export default function Login(){
     return(
         
     // Contenedor principal: Flexbox centrado y 100% del alto de la pantalla
-    <div className="container-fluid d-flex justify-content-center align-items-center vh-100 bg-light">
+  
+    <div className="login-bg container-fluid d-flex justify-content-center align-items-center vh-100">
       <div className="card shadow-lg p-4" style={{ width: '100%', maxWidth: '400px', borderRadius: '12px' }}>
         
-
         <div className="card-body">
           {/* Encabezado del Sistema de Auditoría */}
           <div className="text-center mb-4">
+            <h1 className="fw-bold text-danger">Boxito</h1>
             <h3 className="fw-bold text-danger">Módulo de Auditoría</h3>
+            <h5>Cancún, México</h5>
+            <hr/>
             <p className="text-muted small">Ingresa tus credenciales de acceso exclusivo</p>
           </div>
 
@@ -68,7 +71,7 @@ export default function Login(){
           <form onSubmit={handleSubmit}>
             {/* Campo Usuario */}
             <div className="form-group mb-3">
-              <label className="form-label text-secondary small fw-semibold">Usuario</label>
+              <label className="form-label small fw-semibold">Usuario</label>
               <input type="text" name="username" className="form-control" placeholder="ej. bxSucursal"
                 value={userdata.username} onChange={handleChange}
                 required disabled={loading}/>
@@ -76,7 +79,7 @@ export default function Login(){
 
             {/* Campo Contraseña */}
             <div className="form-group mb-4">
-              <label className="form-label text-secondary small fw-semibold">Contraseña</label>
+              <label className="form-label small fw-semibold">Contraseña</label>
               <input type="password" name="password" className="form-control" placeholder="••••••••"
                 value={userdata.password} onChange={handleChange}
                 required disabled={loading}/>

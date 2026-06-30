@@ -5,6 +5,7 @@ import imageCompression from "browser-image-compression";
 const API_URL = import.meta.env.VITE_API_URL;
 const HOMEMADE_TOKEN = import.meta.env.VITE_HOMEMADE_TOKEN;
 
+
 async function PreparePromises(imgFile, folderID, secData, access_token){
     const fileData = new FormData();
     const fileMetadata = { name: imgFile.name, parents: [folderID]}
@@ -39,6 +40,7 @@ export function BotonDrive(){
     const { metadata, secciones } = useFormStore();
     const [isEnabled, SetIsEnabled] = useState(true);
     const [uploading, SetUploading] = useState(false);
+    const [progress, SetProgress] = useState({percent: 0 , text: 'Listo para Enviar'});
 
     const GET_TOKEN = `${API_URL}/drive/get_token`;
     const PHASE_ONE_URL = `${API_URL}/drive/upload`;
@@ -49,14 +51,14 @@ export function BotonDrive(){
             return;
         }
         SetUploading(true);        
-        
+        SetProgress({ percent: 10, text: 'Recopilando Datos' });
         //EJECUTAR PETICION
         try {
             //Adjuntar metadatos
             const formData = new FormData();
             formData.append('metadata',JSON.stringify(metadata));
             formData.append('secciones', JSON.stringify(secciones));
-        
+            
             //FASE 1 - RECLAMA TOKEN, CREA FOLDER Y TXT
             const responseOne = await fetch(PHASE_ONE_URL,{
                 method: 'POST',
@@ -67,7 +69,7 @@ export function BotonDrive(){
             const result = await responseOne.json();
             if(!responseOne.ok) throw new Error(result.error || 'Error desconocido en el servidor');
             
-            alert('Reporte Enviado al drive central! (Texto)');
+            SetProgress({ percent: 30, text: 'Reporte Enviado, preparando imágenes...' });
             const folderDestiny = result.folderDestiny;
 
             //FOLDER Y TXT CARGADOS
@@ -94,11 +96,25 @@ export function BotonDrive(){
                 });//forEach
             });//forEach
 
-            await Promise.all(imagePromises);
-            alert('Reporte Enviado al drive central! (Imagenes)');
+            const totalFotos = imagePromises.length;
+            let fotosSubidas = 0;
+
+            //atencion aqui
+            const uploadTasks = imagePromises.map(async (task) => {
+                await task;
+                fotosSubidas++;
+                const currentPercent = 30 + Math.floor((fotosSubidas / totalFotos) * 70);
+                SetProgress({ 
+                    percent: currentPercent, 
+                    text: `Subiendo foto ${fotosSubidas} de ${totalFotos}...` 
+                });
+            });
+
+            await Promise.all(uploadTasks); //imagePromises
+            SetProgress({ percent: 100, text: '¡Reporte enviado exitosamente!' });
         } catch (error) {
             console.error(error);
-            alert(`Ocurrio un error ${error}`);
+            SetProgress({ percent: 30, text: 'Ocurrio un Error en el envío' });
         }finally{
             SetUploading(false);
         }
@@ -111,9 +127,22 @@ export function BotonDrive(){
                 <label className="form-check-label">Todo listo para enviar</label>
             </div>  
 
+
             <button className="btn btn-primary btn-lg" onClick={handleUpload} disabled={isEnabled || uploading}>
                 {uploading ? '🔄 Sincronizando con Drive...' : '🚀 Autenticar y Guardar en Drive'}
-            </button>      
+            </button>
+
+            {uploading && (
+                <div className="mt-3">
+                    <div className="progress" style={{ height: '20px' }}>
+                        <div  className="progress-bar progress-bar-striped progress-bar-animated" 
+                        role="progressbar"  style={{ width: `${progress.percent}%` }}>
+                            {progress.percent}%
+                        </div>
+                    </div>
+                    <small className="text-muted">{progress.text}</small>
+                </div>
+            )}      
         </div>
     )
 }

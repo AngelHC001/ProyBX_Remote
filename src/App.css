@@ -112,6 +112,13 @@ body{
   background-color: rgb(255, 240, 240);
 }
 
+.login-bg{
+  background-color: rgba(255, 240, 240);
+  background-image:  url('./store/fondo1.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 /*MOVILES*/
 
 @media (max-width: 768px) {
