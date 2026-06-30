@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import {useAuth} from '../../backend/auth_context.jsx'
 
 //Estructura inicial del JSON
 //Acumulado de datos
@@ -13,15 +12,11 @@ const getFechaHoy = ()=>{
     return fechaLocal.toISOString().split('T')[0];
 }
 
-const GetUsuario = () => {
-    const { user } = useAuth();
-    return user.sucursal;
-}
 
 export const useFormStore = create((set) => ({
         //ESTRUCTURA INICIAL DEL JSON
         metadata : {
-            sucursal: GetUsuario(),
+            sucursal: '',
             fecha: getFechaHoy()
         },
         secciones:{

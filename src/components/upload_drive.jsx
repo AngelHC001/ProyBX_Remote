@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFormStore } from "../store/useFormStore";
-import imageCompression from "browser-image-compression";
+//import imageCompression from "browser-image-compression";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const HOMEMADE_TOKEN = import.meta.env.VITE_HOMEMADE_TOKEN;
@@ -11,7 +11,7 @@ export function BotonDrive(){
     const [isEnabled, SetIsEnabled] = useState(true);
     const [uploading, SetUploading] = useState(false);
 
-    const GET_TOKEN = `${API_URL}/drive/get_token`;
+    //const GET_TOKEN = `${API_URL}/drive/get_token`;
     const PHASE_ONE_URL = `${API_URL}/drive/upload`;
    
     const handleUpload = async() => {
@@ -63,10 +63,7 @@ export function BotonDrive(){
             formData.append('metadata',JSON.stringify(metadata));
             formData.append('secciones', JSON.stringify(secciones));
         
-            const MainRes = await fetch(GET_TOKEN);
-            const { access_token } = await MainRes.json();
-
-            //FASE 1 - CREAR FOLDER Y TXT
+            //FASE 1 - RECLAMA TOKEN, CREA FOLDER Y TXT
             const responseOne = await fetch(PHASE_ONE_URL,{
                 method: 'POST',
                 body: formData,

@@ -1,15 +1,15 @@
 import express from 'express';
 import process from 'process';
 import { google } from "googleapis";
-//import busboy from "busboy";
+import busboy from "busboy";
 
-import { auth2Client } from './auth_config.js';
-//import { crearEstructuraReporte } from './drive_service.js';
+import { auth2Client, verifyCredentials } from './auth_config.js';
+import { crearEstructuraReporte } from './drive_service.js';
 
 const router = express.Router();
 
 //Variables de entorno en produccion
-//const DRIVE_FOLDER = process.env.VITE_DRIVE_FOLDER;
+const DRIVE_FOLDER = process.env.VITE_DRIVE_FOLDER;
 const DRIVE_FILE = process.env.VITE_DRIVE_FILE;
 
 //USA EL CLIENT ID
@@ -38,7 +38,7 @@ export async function getUsersFromDrive(){
     return usuariosCache;
 }
 
-/*
+
 //MIDDLEWARE DE AUTENTICACION
 const ensureAuth = async(req, res, next) => {
     const isValid = verifyCredentials();
@@ -49,7 +49,7 @@ const ensureAuth = async(req, res, next) => {
     next();
 }
 
-
+/*
 router.get('/get_token', async(req,res) => {
     try {
         const tokenResponse = await auth2Client.getAccessToken();
@@ -60,9 +60,9 @@ router.get('/get_token', async(req,res) => {
         return res.status(500).json({message: "Error crítico de autenticación: " + authError});
     }
 });
+*/
 
-
-router.post('/upload', async(req,res) => {
+router.post('/upload', ensureAuth ,async(req,res) => {
     //CONFIGURACION DE CORS
     res.set('Access-Control-Allow-Methods', 'POST', 'OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -107,5 +107,5 @@ router.post('/upload', async(req,res) => {
         return res.status(500).json({ error: error.message });
     }
 });
-*/
+
 export default router;
