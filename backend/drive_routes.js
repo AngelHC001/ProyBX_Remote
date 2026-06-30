@@ -49,18 +49,18 @@ const ensureAuth = async(req, res, next) => {
     next();
 }
 
-/*
+
 router.get('/get_token', async(req,res) => {
     try {
         const tokenResponse = await auth2Client.getAccessToken();
         if (!tokenResponse.token) throw new Error("NO SE PUDO GENERAR UN TOKEN ACCESS VALIDO");
-        console.log('AUTENTICADO');
+        console.log('LLAVE TOMADA');
         return res.status(200).json({access_token: tokenResponse.token});
     } catch (authError) {
         return res.status(500).json({message: "Error crítico de autenticación: " + authError});
     }
 });
-*/
+
 
 router.post('/upload', ensureAuth ,async(req,res) => {
     //CONFIGURACION DE CORS
