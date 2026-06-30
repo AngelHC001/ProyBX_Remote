@@ -99,7 +99,7 @@ export function BotonDrive(){
             const totalFotos = imagePromises.length;
             let fotosSubidas = 0;
 
-            //atencion aqui
+            //Atencion en esta operacion
             const uploadTasks = imagePromises.map(async (task) => {
                 await task;
                 fotosSubidas++;

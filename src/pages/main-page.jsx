@@ -28,7 +28,7 @@ export default function MainPage(){
                 </div>
                
                 <span className="badge rounded-pill text-bg-danger d-flex align-items-center">
-                  Sucursal: {user.sucursal}
+                  Sucursal: {user?.sucursal}
                 </span>
 
                 <button className="btn btn-danger btn-sm rounded-pill" 

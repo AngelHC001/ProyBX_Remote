@@ -21,9 +21,12 @@ function MainSection(){
     
     //ATENCION A FALLAS
     useEffect(() => {
-        setSucursal(user.sucursal);
-        setFecha();
-    });
+        if (user && user.sucursal) {
+            setSucursal(user.sucursal);
+            setFecha(); // Asegúrate de que esta función maneje bien los valores
+        }
+        
+    },[user, setFecha, setSucursal]);
 
     return(
         <div className="container d-flex flex-column py-3 gap-3 w-75">
